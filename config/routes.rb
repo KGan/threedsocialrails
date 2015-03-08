@@ -4,8 +4,6 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'threedscene#index'
-
-  # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
@@ -53,4 +51,6 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+  devise_for :users, :skip => [:registration], :controllers => { omniauth_callbacks: 'omniauth_callbacks' }
+
 end
