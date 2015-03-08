@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - materials - anisotropic texture filtering</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #fff;
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index:100;
+			}
+
+			.lbl { color:#fff; font-size:16px; font-weight:bold; position: absolute; bottom:0px; z-index:100; text-shadow:#000 1px 1px 1px; background-color:rgba(0,0,0,0.85); padding:1em }
+			#lbl_left { text-align:left; left:0px }
+			#lbl_right { text-align:left; right:0px }
+
+			.g { color:#aaa }
+			.c { color:#fa0 }
+
+			a { color:red }
+
+			/*#stats { position: absolute; top:0; left: 0 }
+			#stats #fps { background: transparent !important }
+			#stats #fps #fpsText { color: #777 !important }
+			#stats #fps #fpsGraph { display: none }*/
+		</style>
+	</head>
+
+	<body>
+		<!-- <div id="info">
+			<a href="http://threejs.org" target="_blank">three.js</a> - anisotropic texture filtering example
+		</div> -->
+
+		<div id="lbl_left" class="lbl">
+		anisotropy: <span class="c" id="val_left"></span><br/>
+		</div>
+
+		<div id="lbl_right" class="lbl">
+		anisotropy: <span class="c" id="val_right"></span><br/>
+		</div>
+
+		<script src="js/three.min.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script src="fonts/helvetiker_regular.typeface.js"></script>
+		<script src="node_modules/tween.js/index.js"> </script>
+
+
+		<script>
+
+			jk = {}
+			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var SCREEN_WIDTH = window.innerWidth;
+			var SCREEN_HEIGHT = window.innerHeight;
+
+			var container;
+
+			var camera, scene1, scene2, renderer;
+
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			var window_dance = []
+
+			init();
+			animate();
+
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+
+				//
+
+				camera = new THREE.PerspectiveCamera( 50, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 25000 );
+				camera.position.z = 0;
+
+				scene1 = new THREE.Scene();
+
+
+				scene1.fog = new THREE.Fog( 0xf2f7dd, 1, 25000 );
+
+
+				scene1.add( new THREE.AmbientLight( 0xeef0ff ) );
+
+
+				var light1 = new THREE.DirectionalLight( 0xffffff, 2 );
+				light1.position.set( 1, 1, 1 );
+				scene1.add( light1 );
+
+
+
+				// GROUND
+
+				var maxAnisotropy = renderer.getMaxAnisotropy();
+
+				var texture1 = THREE.ImageUtils.loadTexture( "textures/crate.gif" );
+				var material1 = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture1 } );
+
+				texture1.anisotropy = maxAnisotropy;
+				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
+				texture1.repeat.set( 700, 800 );
+
+				if ( maxAnisotropy > 0 ) {
+
+					document.getElementById( "val_left" ).innerHTML = texture1.anisotropy;
+
+				} else {
+
+					document.getElementById( "val_left" ).innerHTML = "not supported";
+
+				}
+
+				// WINDOW
+
+        var loader = new THREE.OBJLoader();
+
+				var center = new THREE.Vector3( 0, 0, 0)
+				var radius = new THREE.Vector3( 0, 0, 1000)
+				var axis = new THREE.Vector3( 0, 1, 0)
+        // load a resource
+        loader.load(
+        	// resource URL
+        	'models/window.obj',
+        	// Function when resource is loaded
+        	function ( p_object ) {
+							scene1.add(p_object)
+						for(var copy = 0; copy < 13; copy++) {
+							object = p_object.clone()
+							angle = Math.PI / 6;
+							radius.applyAxisAngle( axis, angle )
+							object.position.addVectors(center, radius)
+							object.scale.set( 10, 10, 10 )
+							object.rotation.y = 8 * Math.PI / 12 + copy * Math.PI / 6;
+							for(var i in object.children) {
+											var texture = THREE.ImageUtils.loadTexture('textures/pirate.gif');
+											texture.wrapS = THREE.RepeatWrapping;
+											texture.wrapT = THREE.RepeatWrapping;
+											object.children[i].material = new THREE.MeshLambertMaterial({map: texture, needsUpdate: true});
+									}
+							window_dance.push(object)
+							scene1.add( object );
+						}
+					}
+        );
+
+        //  TEXT
+
+				jk.origin = new THREE.Vector3(0, 0, 0)
+				jk.negativeZ = new THREE.Vector3(0,0,-1)
+				jk.yaxis = new THREE.Vector3(0, 1, 0)
+				jk.flying_monkeys = 0
+
+				var interval = setInterval ( function () {
+					if (jk.flying_monkeys > 50) {
+						clearInterval(interval)
+					}
+
+					jk.flying_monkeys++
+
+					textGeo = new THREE.TextGeometry( "what the actual fuck", {
+
+							size: 100,
+							height: 10,
+							curveSegments: 4,
+
+							font: "helvetiker",
+							weight: "normal",
+							style: "normal",
+
+
+							material: 0,
+							extrudeMaterial: 1
+
+						});
+
+						textGeo.computeBoundingBox();
+						textGeo.computeVertexNormals();
+
+						var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+
+						material = new THREE.MeshFaceMaterial( [
+							new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
+							new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
+						] );
+
+						textMesh1 = new THREE.Mesh( textGeo, material );
+
+						jk.spawn_distance = new THREE.Vector3(8000, 0, 0)
+
+						var entry_angle = Math.random() * 2 * Math.PI
+						var entry_height = Math.random() * 9000
+						// textMesh1.position = jk.spawn_distance
+						textMesh1.position.copy(jk.spawn_distance.applyAxisAngle( jk.yaxis, entry_angle ))
+						textMesh1.position.setY(entry_height)
+						var tto = Math.random() * 5000
+						// textMesh1.rotation.x = 0;
+						textMesh1.lookAt( jk.origin )
+
+						var move_tween = new TWEEN.Tween(textMesh1.position).to( {x: 0, y: 0, z:0}, 5000 + tto)
+																			.easing(TWEEN.Easing.Exponential.In).start();
+
+
+						// textMesh1.position.x = 0;
+						// textMesh1.position.y = 25;
+						// textMesh1.position.z = -200;
+
+						scene1.add( textMesh1 );
+					}, 300)
+				//
+
+
+				var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
+
+				var mesh1 = new THREE.Mesh( geometry, material1 );
+				mesh1.rotation.x = - Math.PI / 2;
+				mesh1.scale.set( 1000, 1000, 1000 );
+
+
+
+				scene1.add( mesh1 );
+
+				// RENDERER
+
+				renderer.setClearColor( scene1.fog.color );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				renderer.autoClear = false;
+
+				renderer.domElement.style.position = "relative";
+				container.appendChild( renderer.domElement );
+
+				// STATS1
+
+				// stats = new Stats();
+				// container.appendChild( stats.domElement );
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+			}
+
+			function onDocumentMouseMove(event) {
+
+				mouseX = ( event.clientX - windowHalfX );
+				mouseY = ( event.clientY - windowHalfY );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				TWEEN.update();
+				render();
+				// stats.update();
+
+			}
+
+			$(document).ready ( function() {
+				$(document).bind('keypress', function (event) {
+					angle = 0.05
+					switch (event.keyCode) {
+
+						case 119:
+							camera.translateOnAxis (jk.negativeZ, 20)
+							break
+						case 115:
+							camera.translateOnAxis (jk.negativeZ, -20)
+							break
+						case 100:
+							camera.rotateOnAxis (yaxis, -angle)
+							break
+						case 97:
+							camera.rotateOnAxis (yaxis, angle)
+							break
+					}
+					// case 'a' :
+				})
+			})
+
+			function render() {
+				yaxis = new THREE.Vector3(0, 1, 0)
+				// for(var i = 0; i < window_dance.length; i++){
+				// 	window_dance[i].position.applyAxisAngle( yaxis, 1/200 )
+				// 	window_dance[i].rotation.y += 1/200
+				// }
+				// camera.position.x += ( mouseX - camera.position.x ) * .05;
+				camera.position.y = THREE.Math.clamp( camera.position.y + ( - ( mouseY - 200 ) - camera.position.y ) * .05, 50, 1000 );
+
+				// lookAt = new THREE.Vector3( 0, 0, 800)
+				// angle = Math.PI * mouseX / 1000
+				// lookAt.applyAxisAngle( yaxis, angle )
+
+				// camera.lookAt( lookAt );
+
+				// renderer.enableScissorTest( false );
+				renderer.clear();
+				// renderer.enableScissorTest( true );
+
+				// renderer.setScissor( 0, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT );
+				renderer.render( scene1, camera );
+
+				// renderer.setScissor( SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2 - 2, SCREEN_HEIGHT  );
+
+
+			}
+
+		</script>
+
+	</body>
+</html>
