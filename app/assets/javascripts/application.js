@@ -18,3 +18,5 @@
 //= require tween.js
 //= require helvetiker_regular.typeface.js
 //= require_tree
+//= require websocket_rails/main
+
