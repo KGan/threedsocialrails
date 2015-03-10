@@ -192,7 +192,8 @@
 
 				tweetChannel = dispatcher.subscribe('tweets')
 				tweetChannel.bind('new', function(tweet) {
-					flying_monkey_factory.postMessage({'jk': jk, 'text': tweet})
+					flying_monkey_factory.postMessage({'jk': jk, 'text': tweet, 'three': "<%= javascript_path 'three.min.js'%>",
+																							'helv' : "<%= javascript_path 'helvetiker_regular.typeface.js' %>" })
 				});
 
 				jloader = new THREE.JSONLoader()
@@ -203,7 +204,7 @@
 					// }
 					// flying_monkeys++
 
-					group = jloader.parse(msg.group)
+					group = jloader.parse(msg.group, '')
 
 					jk.spawn_distance = new THREE.Vector3(8000, 0, 0)
 					var entry_angle = Math.random() * Math.PI / 2 + Math.PI /4

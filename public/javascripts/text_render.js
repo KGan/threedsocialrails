@@ -1,3 +1,24 @@
+var three_is_loaded = false
+
+
+self.addEventListener('message', function(msg) {
+  if (!three_is_loaded) {
+    importScripts(msg.data.three, msg.data.helv)
+    // renderer = new THREE.WebGLRenderer( { antialias: true } );
+    three_is_loaded = true
+  }
+  var text = msg.data.text
+  var text_array = text.split( "\n" )
+  var group = new THREE.Group()
+  for (var i = 0; i < text_array.length; i++)
+  {
+    fmp = flying_monkey_piece(text_array[i], i, msg.data.jk)
+    group.add(fmp)
+  }
+  self.postMessage({'group': group.toJSON()})
+})
+
+
 function flying_monkey_piece(text, offset, jk) {
 
   textGeo = new THREE.TextGeometry( text, {
@@ -29,16 +50,3 @@ function flying_monkey_piece(text, offset, jk) {
     textMesh1.position.setY( - jk.textSize * offset * 1.5 )
     return textMesh1
   }
-
-
-self.addEventListener('message', function(msg) {
-  var text = msg.text
-  var text_array = text.split( "\n" )
-  var group = new THREE.Group()
-  for (var i = 0; i < text_array.length; i++)
-  {
-    fmp = flying_monkey_piece(text_array[i], i, msg.jk)
-    group.add(fmp)
-  }
-  self.postMessage({'group': group.toJSON()})
-})
