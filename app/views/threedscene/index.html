@@ -197,15 +197,15 @@
 				});
 
 				jloader = new THREE.JSONLoader()
-
+				var fm = 0
 				flying_monkey_factory.addEventListener ('message', function(msg) {
-					// if (flying_monkeys > 100) {
-					// 	return
-					// }
-					// flying_monkeys++
-
-					group = jloader.parse(msg.group, '')
-
+					xk= msg
+					if (fm > 5) return
+					fm++
+					group = new THREE.Group()
+					for (var i = 0; i < msg.data.monkey_pieces.length; i++) {
+						group.add(jloader.parse(msg.data.monkey_pieces[i].data, 'textures'))
+					}
 					jk.spawn_distance = new THREE.Vector3(8000, 0, 0)
 					var entry_angle = Math.random() * Math.PI / 2 + Math.PI /4
 					var entry_height = Math.random() * 9000
