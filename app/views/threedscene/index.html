@@ -110,6 +110,37 @@
 				scene1.add( light1 );
 
 
+				// Letters
+
+				jk.letters = {}
+				var chars = [].concat.apply( [], Array(94) )
+              .map( function(_, i) {
+								return String.fromCharCode(i+33)
+							})
+				letter_material = new THREE.MeshFaceMaterial( [
+					new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
+					new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
+				] );
+
+				for(var i = 0; i < jk.chars.length; i++) {
+					letterGeo = new THREE.TextGeometry( chars[i], {
+			  		size: jk.textSize,
+			  		height: jk.textWidth,
+			  		curveSegments: 1,
+			  		font: "helvetiker",
+			  		weight: "normal",
+			  		style: "normal",
+			  		material: 0,
+			  		extrudeMaterial: 1
+			  	});
+
+			  	letterGeo.computeBoundingBox();
+			  	letterGeo.computeVertexNormals();
+
+			  	var centerOffset = -0.5 * ( letterGeo.boundingBox.max.x - letterGeo.boundingBox.min.x );
+					jk.letters[chars[i]] = new THREE.Mesh( letterGeo, letter_material );
+				}
+
 
 				// GROUND
 
@@ -141,38 +172,6 @@
 				//
 				// scene1.add( mesh1 );
 
-				// WINDOW
-
-        // var loader = new THREE.OBJLoader();
-				//
-				// var center = new THREE.Vector3( 0, 0, 0)
-				// var radius = new THREE.Vector3( 0, 0, 1000)
-				// var axis = new THREE.Vector3( 0, 1, 0)
-        // // load a resource
-        // loader.load(
-        // 	// resource URL
-        // 	'models/window.obj',
-        // 	// Function when resource is loaded
-        // 	function ( p_object ) {
-				// 			scene1.add(p_object)
-				// 		for(var copy = 0; copy < 13; copy++) {
-				// 			object = p_object.clone()
-				// 			angle = Math.PI / 6;
-				// 			radius.applyAxisAngle( axis, angle )
-				// 			object.position.addVectors(center, radius)
-				// 			object.scale.set( 10, 10, 10 )
-				// 			object.rotation.y = 8 * Math.PI / 12 + copy * Math.PI / 6;
-				// 			for(var i in object.children) {
-				// 							var texture = THREE.ImageUtils.loadTexture('textures/pirate.gif');
-				// 							texture.wrapS = THREE.RepeatWrapping;
-				// 							texture.wrapT = THREE.RepeatWrapping;
-				// 							object.children[i].material = new THREE.MeshLambertMaterial({map: texture, needsUpdate: true});
-				// 					}
-				// 			window_dance.push(object)
-				// 			scene1.add( object );
-				// 		}
-				// 	}
-        // );
 
         //  TEXT
 
@@ -188,25 +187,15 @@
 				meshes = {}
 
 				var dispatcher = new WebSocketRails('localhost:3000/websocket');
-				var flying_monkey_factory = new Worker("<%= javascript_path 'text_render.js'%>")
 
 				tweetChannel = dispatcher.subscribe('tweets')
 				tweetChannel.bind('new', function(tweet) {
-					flying_monkey_factory.postMessage({'jk': jk, 'text': tweet, 'three': "<%= javascript_path 'three.min.js'%>",
-																							'helv' : "<%= javascript_path 'helvetiker_regular.typeface.js' %>" })
+					dispatch_flying_monkey(tweet))
 				});
 
-				jloader = new THREE.ObjectLoader()
-				var fm = 0
+
 				flying_monkey_factory.addEventListener ('message', function(msg) {
-					xk= msg
-					if (fm > 5) return
-					fm++
-					group = new THREE.Group()
-					for (var i = 0; i < msg.data.monkey_pieces.length; i++) {
-						var json = JSON.parse(msg.data.monkey_pieces[i])
-						group.add( jloader.parse(json) )
-					}
+
 					jk.spawn_distance = new THREE.Vector3(8000, 0, 0)
 					var entry_angle = Math.random() * Math.PI / 2 + Math.PI /4
 					var entry_height = Math.random() * 9000
