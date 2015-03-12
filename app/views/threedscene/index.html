@@ -112,6 +112,9 @@
 
 				// Letters
 
+				jk.textWidth = 25
+				jk.textSize = 100
+				jk.letterSpace = 10
 				jk.letters = {}
 				var chars = [].concat.apply( [], Array(94) )
               .map( function(_, i) {
@@ -142,44 +145,11 @@
 				}
 
 
-				// GROUND
-
-				// var maxAnisotropy = renderer.getMaxAnisotropy();
-				//
-				// var texture1 = THREE.ImageUtils.loadTexture( "textures/crate.gif" );
-				// var material1 = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture1 } );
-				//
-				// texture1.anisotropy = maxAnisotropy;
-				// texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				// texture1.repeat.set( 700, 800 );
-				//
-				// if ( maxAnisotropy > 0 ) {
-				//
-				// 	document.getElementById( "val_left" ).innerHTML = texture1.anisotropy;
-				//
-				// } else {
-				//
-				// 	document.getElementById( "val_left" ).innerHTML = "not supported";
-				//
-				// }
-				// var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-				//
-				// var mesh1 = new THREE.Mesh( geometry, material1 );
-				// mesh1.rotation.x = - Math.PI / 2;
-				// mesh1.scale.set( 1000, 1000, 1000 );
-				//
-				//
-				//
-				// scene1.add( mesh1 );
-
-
         //  TEXT
 
 				jk.origin = new THREE.Vector3(0, 0, 0)
 				jk.negativeZ = new THREE.Vector3(0,0,-1)
 				jk.yaxis = new THREE.Vector3(0, 1, 0)
-				jk.textWidth = 25
-				jk.textSize = 100
 
 				camera.position.z = 4000
 
@@ -192,6 +162,28 @@
 				tweetChannel.bind('new', function(tweet) {
 					dispatch_flying_monkey(tweet))
 				});
+
+				create_flying_monkey = function (tweet) {
+					monkey_pieces = tweet.split("\n").map ( function (tweetline) {
+						monkey_piece_factory(tweetline)
+					})
+					flying_monkey = new Three.group()
+					for (var i = 0; i < monkey_pieces.length; i++) {
+						monkey_piece.position.y -= 
+						flying_monkey.add(monkey_piece)
+					}
+				}
+
+				monkey_piece_factory = function (tweetline) {
+					monkey_piece = new Three.group()
+					var pos = 0
+					tweetline.split("").forEach( function (tweetletter) {
+						new_letter = jk.letters[tweetletter].clone()
+						new_letter.position.x = pos
+						pos = new_letter.geometry.boundingBox.max.x + jk.letterSpace
+						monkey_piece.add(new_letter)
+					})
+				}
 
 
 				flying_monkey_factory.addEventListener ('message', function(msg) {
