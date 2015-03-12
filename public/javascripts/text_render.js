@@ -11,7 +11,7 @@ self.addEventListener('message', function(msg) {
   var monkey_pieces = []
   for (var i = 0; i < text_array.length; i++) {
     fmp = flying_monkey_piece(text_array[i], i, msg.data.jk)
-    monkey_pieces.push([fmp.geometries[1].toJSON(), fmp.materials[1].toJSON())])
+    monkey_pieces.push( JSON.stringify(fmp.toJSON()) )
   }
 
   self.postMessage({'monkey_pieces': monkey_pieces})

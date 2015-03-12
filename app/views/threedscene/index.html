@@ -196,7 +196,7 @@
 																							'helv' : "<%= javascript_path 'helvetiker_regular.typeface.js' %>" })
 				});
 
-				jloader = new THREE.JSONLoader()
+				jloader = new THREE.ObjectLoader()
 				var fm = 0
 				flying_monkey_factory.addEventListener ('message', function(msg) {
 					xk= msg
@@ -204,7 +204,8 @@
 					fm++
 					group = new THREE.Group()
 					for (var i = 0; i < msg.data.monkey_pieces.length; i++) {
-						group.add(jloader.parse(msg.data.monkey_pieces[i].data))
+						var json = JSON.parse(msg.data.monkey_pieces[i])
+						group.add( jloader.parse(json) )
 					}
 					jk.spawn_distance = new THREE.Vector3(8000, 0, 0)
 					var entry_angle = Math.random() * Math.PI / 2 + Math.PI /4
@@ -215,17 +216,16 @@
 					var tto = Math.random() * 5000
 					var move_tween = new TWEEN.Tween(group.position)
 						.to( {x: startpos.x / 3, y: -entry_height, z: -startpos.z}, 5000 + tto)
-						.onComplete(function() {
-								for(i in group.children) {
-									// doDispose(group.children[i])
-									scene1.remove(group.children[i])
-								}
-								for(var i = 0; i < meshes[text].length; i++) {
-									meshes[text][i] = undefined
-								}
-								scene1.remove(group)
-
-						})
+						// .onComplete(function() {
+						// 		for(i in group.children) {
+						// 			// doDispose(group.children[i])
+						// 			scene1.remove(group.children[i])
+						// 		}
+						// 		for(var i = 0; i < meshes[text].length; i++) {
+						// 			meshes[text][i] = undefined
+						// 		}
+						// 		scene1.remove(group)
+						// })
 						.start();
 
 					group.lookAt( jk.origin )
