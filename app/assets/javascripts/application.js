@@ -18,3 +18,4 @@
 //= require tween.js
 //= require helvetiker_regular.typeface.js
 //= require websocket_rails/main
+//= require OrbitControls
