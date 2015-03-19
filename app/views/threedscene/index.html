@@ -190,14 +190,21 @@
 
 				tweetChannel = dispatcher.subscribe('tweets')
 				tweetChannel.bind('new', function(tweet) {
-					dispatch_flying_monkey(tweet)
+					var tweet_urls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet)
+					if(tweet_urls) {
+						tweet_urls.forEach(function(tweet_url) {
+							tweet.replace(tweet_url, '')
+						})
+					}
+					dispatch_flying_monkey(tweet, tweet_urls)
 				});
 
-				create_flying_monkey = function (tweet) {
+				create_flying_monkey = function (tweet, tweet_urls) {
 					tweet_split = tweet.split("\n")
 					flying_monkey = new THREE.Group()
+					flying_monkey.userData.tweet_urls = tweet_urls
 					for (var i = 0; i < tweet_split.length; i++) {
-						monkey_pice = monkey_piece_factory(tweet_split[i])
+						monkey_piece = monkey_piece_factory(tweet_split[i])
 						monkey_piece.position.setY(- jk.textSize * i * 1.5)
 						flying_monkey.add(monkey_piece)
 					}
@@ -224,12 +231,12 @@
 					return monkey_piece
 				}
 
-				jk.spawn_distance = new THREE.Vector3(0, 0, -8000)
+				jk.spawn_distance = new THREE.Vector3(0, 0, -5000 - Math.random() * 5000)
 
 
-
-				dispatch_flying_monkey = function (tweet) {
-					var flying_monkey = create_flying_monkey(tweet)
+				dispatch_flying_monkey = function (tweet, tweet_urls) {
+					console.log(tweet_urls)
+					var flying_monkey = create_flying_monkey(tweet, tweet_urls)
 					var entry_angle = Math.random() * 2 * Math.PI
 					var vertical_angle = (0.5 - Math.random()) * Math.PI * (3/4)
 					// var entry_height = Math.random() * 4000
@@ -246,20 +253,9 @@
 					var move_tween = new TWEEN.Tween(flying_monkey.position)
 						.to( {x: 2 * startpos.x / 3, y: startpos.y + ( Math.random() - 0.5) * 4000, z: startpos.z + Math.random() * 2000}, 5000 + time)
 						.onComplete(function() {
-								// for(i in flying_monkey.children) {
-								// 	// doDispose(flying_monkey.children[i])
-								// 	scene1.remove(flying_monkey.children[i])
-								// }
-								// for(var i = 0; i < meshes[text].length; i++) {
-								// 	meshes[text][i] = undefined
-								// }
-								scene1.remove(flying_monkey)
+							scene1.remove(flying_monkey)
 						})
 						.start();
-					// var transp_tween = new TWEEN.Tween(flying_monkey)
-					// 	.to( { opacity: 0}, 2500 )
-					// 	.yoyo(true)
-					// 	.start()
 
 					flying_monkey.lookAt( jk.origin )
 					scene1.add(flying_monkey)
@@ -278,14 +274,13 @@
 				renderer.domElement.style.position = "relative";
 				container.appendChild( renderer.domElement );
 
-				// STATS1
-
-				// stats = new Stats();
-				// container.appendChild( stats.domElement );
-
 				jk.raycaster = new THREE.Raycaster();
 				jk.mouse = new THREE.Vector2();
 
+			}
+
+			function fetch_monkey_image(url) {
+			// TODO  talk to the socket
 			}
 
 
@@ -298,26 +293,17 @@
 			}
 
 
-
-			function onMouseMove( event ) {
-
-				jk.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				jk.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-			}
-
-
 			function render() {
 
 				// update the picking ray with the camera and mouse position
 				jk.raycaster.setFromCamera( jk.mouse, camera );
-				jk.raycaster.precision = 1
+				// jk.raycaster.precision = 1
 				// calculate objects intersecting the picking ray
-				var intersects = jk.raycaster.intersectObjects( scene1.children );
+				var intersects = jk.raycaster.intersectObjects( scene1.children, true );
 
 				for ( var i = 0; i < intersects.length; i++ ) {
 
-					console.log(intersects[ i ].object);
+					//console.log(intersects[ i ].object.parent.parent);
 
 				}
 

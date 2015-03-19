@@ -320,8 +320,6 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
     jk = jk || {}
 
-
-
     jk.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 		jk.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
