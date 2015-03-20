@@ -26,6 +26,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'fastimage'
 gem 'ruby-oembed'
+gem 'openssl'
 
 gem 'twitter'
 gem 'websocket-rails'
