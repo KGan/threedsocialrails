@@ -283,9 +283,47 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 	function onMouseDown( event ) {
+		var mouse = {}
 
 		if ( scope.enabled === false ) { return; }
 		event.preventDefault();
+
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+		jk.myRaycaster.setFromCamera( mouse, scope.object );
+
+		var intersects = jk.myRaycaster.intersectObjects( scene1.children, true );
+
+		if (intersects.length > 0) {
+			selectIntersection(intersects)
+		} else {
+			orbitStart(event);
+		}
+
+		scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
+		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
+
+	}
+
+	function selectIntersection(intersects) {
+		console.log(intersects);
+		var pointedMonkeys = intersects.map(function (intersect) {
+			return intersect.object.parent.parent;
+		}).unique();
+		var distances = pointedMonkeys.map(function (monkey) {
+			return monkey.position.distanceTo( scope.object.position );
+		});
+		jk.selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
+		console.log(jk.selectedMonkey)
+		jk.selectedMonkey.eachGrandchild(function(letter) {
+			letter.material.materials.forEach(function(material) {
+				material.wireframe = true;
+			});
+		});
+	}
+
+	function orbitStart(event) {
 
 		if ( event.button === 0 ) {
 			if ( scope.noRotate === true ) { return; }
@@ -311,17 +349,12 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		}
 
 		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
-		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
+
 
 	}
 
 	function onMouseMove( event ) {
 
-    jk = jk || {}
-
-    jk.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		jk.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
 		if ( scope.enabled === false ) return;
 
