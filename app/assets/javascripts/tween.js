@@ -114,6 +114,10 @@ TWEEN.Tween = function ( object ) {
 
 	}
 
+	this.object = function() {
+		return _object
+	}
+
 	this.to = function ( properties, duration ) {
 
 		if ( duration !== undefined ) {

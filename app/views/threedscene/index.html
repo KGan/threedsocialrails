@@ -308,6 +308,7 @@
 							return results.unique()
 							// return results
 						},
+
 						setFromCamera: function(mouse, camera) {
 							raycasters.forEach(function(raycaster, idx) {
 								raycaster.setFromCamera({
@@ -315,7 +316,9 @@
 									y: mouse.y + diffs[idx][1]
 								}, camera);
 							})
-						}
+						},
+
+						raycasters: raycasters
 					}
 				}()
 			}

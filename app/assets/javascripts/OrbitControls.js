@@ -282,14 +282,18 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 	}
 
-	function onMouseDown( event ) {
+	function setMouse(event) {
 		var mouse = {}
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		return mouse
+	}
+
+	function onMouseDown( event ) {
+		var mouse = setMouse(event)
 
 		if ( scope.enabled === false ) { return; }
 		event.preventDefault();
-
-		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
 		jk.myRaycaster.setFromCamera( mouse, scope.object );
 
@@ -303,7 +307,6 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 		scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
 		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
-
 	}
 
 	function selectIntersection(intersects) {
@@ -315,12 +318,14 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 			return monkey.position.distanceTo( scope.object.position );
 		});
 		jk.selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
-		console.log(jk.selectedMonkey)
-		jk.selectedMonkey.eachGrandchild(function(letter) {
-			letter.material.materials.forEach(function(material) {
-				material.wireframe = true;
-			});
-		});
+		jk.selectedMonkey.highlight(0xf0c96e);
+		jk.selectedMonkey.userData.distance = jk.selectedMonkey.position.distanceTo(scope.object.position);
+		var tween = TWEEN.getAll().filter(function(tween) {
+			return tween.object().equals(jk.selectedMonkey.position);
+		})[0];
+		if (tween) {
+			tween.stop();
+		}
 	}
 
 	function orbitStart(event) {
@@ -358,7 +363,24 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 		if ( scope.enabled === false ) return;
 
-		// event.preventDefault();
+		if (jk.selectedMonkey) {
+			moveMonkey(event)
+		} else {
+			orbitCamera(event)
+		}
+	}
+
+	function moveMonkey(event) {
+		var mouse = setMouse(event)
+		jk.myRaycaster.raycasters[1].setFromCamera( mouse, scope.object );
+		jk.selectedMonkey.position = jk.myRaycaster.raycasters[1].ray.direction.clone();
+		jk.selectedMonkey.position.multiplyScalar(jk.selectedMonkey.userData.distance);
+		jk.selectedMonkey.position.add(scope.object.position);
+	}
+
+
+	function orbitCamera(event) {
+
 
 		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
@@ -413,7 +435,21 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 	}
 
+	THREE.Group.prototype.highlight = function(color) {
+		this.eachGrandchild(function(letter) {
+			letter.material.materials.forEach(function(material) {
+				material.emissive = new THREE.Color(color);
+			});
+		});
+	}
+
+
 	function onMouseUp( /* event */ ) {
+
+		if (jk.selectedMonkey) {
+			jk.selectedMonkey.highlight(0x000000)
+			jk.selectedMonkey = null
+		}
 
 		if ( scope.enabled === false ) return;
 
