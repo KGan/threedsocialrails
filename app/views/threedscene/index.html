@@ -130,16 +130,29 @@
 
 
 				var light1 = new THREE.DirectionalLight( 0xffffff, .5 );
-				light1.position.set( -8000, 1, 1 );
+				light1.position.set( 10, 1, 1 );
 				scene1.add( light1 );
 
-				var light2 = new THREE.DirectionalLight( 0xffffff, .4 );
-				light1.position.set( 8000, 1, 1 );
+				// new TWEEN.Tween (light1.position)
+				// 	.to({x: 8000, y: 5000, z: -5000}, 5000)
+				// 	.repeat(Infinity)
+				// 	.yoyo(true)
+				// 	.start();
+
+				var light2 = new THREE.DirectionalLight( 0xffffff, .6 );
+				light2.position.set( 5, 700, 1 );
 				scene1.add( light2 );
 
-				var light2 = new THREE.DirectionalLight( 0x999999, .4 );
-				light1.position.set( 0, 800, 9000 );
-				scene1.add( light2 );
+				new TWEEN.Tween (light2.position)
+					.to({x: 0, y: -700, z: 0}, 4000)
+					.repeat(Infinity)
+					.yoyo(true)
+					.start();
+
+
+				var light3 = new THREE.DirectionalLight( 0x999999, .6 );
+				light3.position.set( 0, 800, 9000 );
+				scene1.add( light3 );
 
 
 
@@ -163,7 +176,7 @@
 								refractionRatio: 0.6,
 								reflectivity: 0.2,
 								specular: 0xffcccc,
-								shininess: 50
+								shininess: 20
 							} ), // front
 							new THREE.MeshPhongMaterial( { color: 0xaaaaff, shading: THREE.SmoothShading } ) // side
 						]);
@@ -212,26 +225,40 @@
 
 				tweetChannel = dispatcher.subscribe('tweets')
 				tweetChannel.bind('new', function(tweet) {
-					var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet)
+					var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text)
 					if(tweetUrls) {
 						tweetUrls.forEach(function(tweetUrl) {
-							tweet = tweet.replace(tweetUrl, '')
+							tweet.text = tweet.text.replace(tweetUrl, '')
 						})
 					}
-					tweet = tweet.replace('&amp;', '&');
+					tweet.text = tweet.text.replace('&amp;', '&');
+					tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
+					tweet.text = tweet.text.replace(/\n\s*\z/, '')
+					console.log(tweet.text)
 					dispatch_flying_monkey(tweet, tweetUrls);
-					console.log(tweet, tweetUrls)
 				});
 
 				create_flying_monkey = function (tweet, tweetUrls) {
-					tweet_split = tweet.split("\n")
-					flying_monkey = new THREE.Group()
+					var tweetSplit = tweet.text.split("\n");
+					var flying_monkey = new THREE.Group();
 					flying_monkey.userData.tweetUrls = tweetUrls
-					for (var i = 0; i < tweet_split.length; i++) {
-						monkey_piece = monkey_piece_factory(tweet_split[i])
+					for (var i = 0; i < tweetSplit.length; i++) {
+						monkey_piece = monkey_piece_factory(tweetSplit[i])
 						monkey_piece.position.setY(- jk.textSize * i * 1.5)
 						flying_monkey.add(monkey_piece)
 					}
+					monkeyAuthor = monkey_piece_factory(tweet.author)
+					monkeyAuthor.position.setY(- jk.textSize * i * 1.5);
+					monkeyAuthor.position.setX(jk.textSize * 3);
+					// monkeyAuthor.scale.copy(new THREE.Vector3(0.8, 0.8, 0.8));
+
+					monkeyAuthor.children.forEach(function(letter) {
+						console.log(letter)
+						letter.material.materials.forEach(function (material) {
+							material.color = new THREE.Color(0xaad5ff);
+						})
+					});
+					flying_monkey.add(monkeyAuthor);
 					return flying_monkey;
 				}
 

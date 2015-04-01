@@ -12,6 +12,7 @@ class ThreedsceneController < ApplicationController
     # uri = URI.parse(<<-URI)
     #   --data  --header '' --verbose
     # URI
+    # Thread.abort_on_exception = true
     Thread.new do
       client = Twitter::Streaming::Client.new do |config|
         config.consumer_key        = "0X4UNFV7P3RzUDWlly7fgD1Cx"
@@ -20,8 +21,14 @@ class ThreedsceneController < ApplicationController
         config.access_token_secret = "zNXDFeQZrm3uEkMabpD5KyTYPTqdMn65iGT2eJixU8omP"
       end
       client.filter(track: "BlackLivesMatter, ChangeAWordRuinAQuote, SXSW, NigeriaDecides") do |object|
+        # debugger
+        tweet = {
+          text: word_wrap(object.text, line_width: $LINE_WIDTH),
+          author: '@' + object.attrs[:user][:screen_name]
+        }
+        puts tweet
         # puts object.text if object.is_a?(Twitter::Tweet)
-        WebsocketRails[:tweets].trigger 'new', word_wrap(object.text, line_width: $LINE_WIDTH)
+        WebsocketRails[:tweets].trigger 'new', tweet
       end
     end
   end
