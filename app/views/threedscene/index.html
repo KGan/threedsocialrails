@@ -212,26 +212,27 @@
 
 				tweetChannel = dispatcher.subscribe('tweets')
 				tweetChannel.bind('new', function(tweet) {
-					var tweet_urls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet)
-					if(tweet_urls) {
-						tweet_urls.forEach(function(tweet_url) {
-							tweet = tweet.replace(tweet_url, '')
+					var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet)
+					if(tweetUrls) {
+						tweetUrls.forEach(function(tweetUrl) {
+							tweet = tweet.replace(tweetUrl, '')
 						})
 					}
 					tweet = tweet.replace('&amp;', '&');
-					dispatch_flying_monkey(tweet, tweet_urls);
+					dispatch_flying_monkey(tweet, tweetUrls);
+					console.log(tweet, tweetUrls)
 				});
 
-				create_flying_monkey = function (tweet, tweet_urls) {
+				create_flying_monkey = function (tweet, tweetUrls) {
 					tweet_split = tweet.split("\n")
 					flying_monkey = new THREE.Group()
-					flying_monkey.userData.tweet_urls = tweet_urls
+					flying_monkey.userData.tweetUrls = tweetUrls
 					for (var i = 0; i < tweet_split.length; i++) {
 						monkey_piece = monkey_piece_factory(tweet_split[i])
 						monkey_piece.position.setY(- jk.textSize * i * 1.5)
 						flying_monkey.add(monkey_piece)
 					}
-					return flying_monkey
+					return flying_monkey;
 				}
 
 				monkey_piece_factory = function (tweetline) {
@@ -255,28 +256,35 @@
 					return monkey_piece
 				}
 
-				jk.spawn_distance = new THREE.Vector3(0, 0, -5000 - Math.random() * 5000)
 
 
-				dispatch_flying_monkey = function (tweet, tweet_urls) {
-					var flying_monkey = create_flying_monkey(tweet, tweet_urls)
-					var entry_angle = Math.random() * 2 * Math.PI
-					var vertical_angle = (0.5 - Math.random()) * Math.PI * (3/4)
-					var startpos = jk.spawn_distance.clone()
-					startpos.applyAxisAngle( jk.yaxis, entry_angle )
-					var sp = startpos.clone().cross(jk.yaxis).normalize()
-					startpos.applyAxisAngle( sp, vertical_angle)
-					flying_monkey.position.copy(startpos)
+				dispatch_flying_monkey = function (tweet, tweetUrls) {
+					var flyingMonkey = create_flying_monkey(tweet, tweetUrls)
+					var entryAngle = Math.random() * 2 * Math.PI
+					var verticalAngle = (0.5 - Math.random()) * Math.PI * (3/4)
+					flyingMonkey.position.copy(new THREE.Vector3(0, 0, -7000 - Math.random() * 1500))
+					flyingMonkey.position.applyAxisAngle( jk.yaxis, entryAngle )
+					var riseAxis = flyingMonkey.position.clone().cross(jk.yaxis).normalize()
+					flyingMonkey.position.applyAxisAngle(riseAxis, verticalAngle)
+					moveTween(flyingMonkey)
+					flyingMonkey.lookAt( jk.origin )
+					scene1.add(flyingMonkey)
+				}
+
+				moveTween = function(flyingMonkey) {
+					var startpos = flyingMonkey.position
 					var time = Math.random() * 10000 + 25000
-					var move_tween = new TWEEN.Tween(flying_monkey.position)
+					flyingMonkey.userData.tween = new TWEEN.Tween(flyingMonkey.position)
 						.to( {x: 2 * startpos.x / 3, y: startpos.y + ( Math.random() - 0.5) * 4000, z: startpos.z + Math.random() * 2000}, 5000 + time)
 						.onComplete(function() {
-							scene1.remove(flying_monkey)
+							scene1.remove(flyingMonkey)
 						})
 						.start();
+				}
 
-					flying_monkey.lookAt( jk.origin )
-					scene1.add(flying_monkey)
+				removeMonkey = function(flyingMonkey) {
+					flyingMonkey.userData.tween.stop();
+					scene1.remove(flyingMonkey)
 				}
 				//
 

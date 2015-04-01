@@ -283,14 +283,15 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 	function setMouse(event) {
-		var mouse = {}
+		var mouse = {};
 		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-		return mouse
+		return mouse;
 	}
 
 	function onMouseDown( event ) {
-		var mouse = setMouse(event)
+		var mouse = setMouse(event);
+
 
 		if ( scope.enabled === false ) { return; }
 		event.preventDefault();
@@ -300,7 +301,12 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		var intersects = jk.myRaycaster.intersectObjects( scene1.children, true );
 
 		if (intersects.length > 0) {
-			selectIntersection(intersects)
+			selectIntersection(intersects);
+			if (Date.now() - jk.mouseDownTime < 500) {
+				openWindow()
+			} else {
+				jk.mouseDownTime = Date.now()
+			}
 		} else {
 			orbitStart(event);
 		}
@@ -320,12 +326,21 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		jk.selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
 		jk.selectedMonkey.highlight(0xf0c96e);
 		jk.selectedMonkey.userData.distance = jk.selectedMonkey.position.distanceTo(scope.object.position);
-		var tween = TWEEN.getAll().filter(function(tween) {
-			return tween.object().equals(jk.selectedMonkey.position);
-		})[0];
+		var tween = jk.selectedMonkey.userData.tween
 		if (tween) {
 			tween.stop();
 		}
+	}
+
+	function openWindow() {
+		var urls = jk.selectedMonkey.userData.tweetUrls;
+		if (urls) {
+			urls.forEach(function(tweetUrl){
+				window.open(tweetUrl);
+				window.focus();
+			});
+		}
+		removeMonkey(jk.selectedMonkey);
 	}
 
 	function orbitStart(event) {
@@ -371,11 +386,12 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 	function moveMonkey(event) {
-		var mouse = setMouse(event)
+		var mouse = setMouse(event);
 		jk.myRaycaster.raycasters[1].setFromCamera( mouse, scope.object );
-		jk.selectedMonkey.position = jk.myRaycaster.raycasters[1].ray.direction.clone();
+		jk.selectedMonkey.position.copy(jk.myRaycaster.raycasters[1].ray.direction);
 		jk.selectedMonkey.position.multiplyScalar(jk.selectedMonkey.userData.distance);
 		jk.selectedMonkey.position.add(scope.object.position);
+		jk.selectedMonkey.lookAt(jk.origin)
 	}
 
 
@@ -448,6 +464,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 		if (jk.selectedMonkey) {
 			jk.selectedMonkey.highlight(0x000000)
+			moveTween(jk.selectedMonkey)
 			jk.selectedMonkey = null
 		}
 
