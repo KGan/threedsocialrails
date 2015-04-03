@@ -453,9 +453,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 	THREE.Group.prototype.highlight = function(color) {
 		this.eachGrandchild(function(letter) {
-			letter.material.materials.forEach(function(material) {
-				material.emissive = new THREE.Color(color);
-			});
+			letter.material.emissive = new THREE.Color(color);
 		});
 	}
 

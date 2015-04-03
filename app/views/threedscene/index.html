@@ -34,10 +34,6 @@
 
 			a { color:red }
 
-			/*#stats { position: absolute; top:0; left: 0 }
-			#stats #fps { background: transparent !important }
-			#stats #fps #fpsText { color: #777 !important }
-			#stats #fps #fpsGraph { display: none }*/
 		</style>
 	</head>
 
@@ -168,21 +164,18 @@
               .map( function(_, i) {
 								return String.fromCharCode(i+33)
 							})
-				letter_material = function() {
-					return new THREE.MeshFaceMaterial([
-							new THREE.MeshPhongMaterial( {
-								color: 0xaaaaff,
-								shading: THREE.FlatShading,
-								refractionRatio: 0.6,
-								reflectivity: 0.2,
-								specular: 0xffcccc,
-								shininess: 20
-							} ), // front
-							new THREE.MeshPhongMaterial( { color: 0xaaaaff, shading: THREE.SmoothShading } ) // side
-						]);
-					}
+				jk.letterMaterial = new THREE.MeshPhongMaterial( {
+					color: 0xaaaaff,
+					shading: THREE.FlatShading,
+					refractionRatio: 0.6,
+					reflectivity: 0.2,
+					specular: 0xffcccc,
+					shininess: 20,
+					transparent: true,
+					opacity: 0
+				});
 
-			// 	letter_material = new THREE.MeshBasicMaterial( {
+			// 	jk.letterMaterial = new THREE.MeshBasicMaterial( {
       //       color: 0xccccff,
       //       refractionRatio: 0.6,
 			// 			transparent: true,
@@ -205,8 +198,7 @@
 			  	letterGeo.computeVertexNormals();
 
 			  	var centerOffset = -0.5 * ( letterGeo.boundingBox.max.x - letterGeo.boundingBox.min.x );
-					jk.letters[chars[i]] = new THREE.Mesh( letterGeo, letter_material() );
-					console.log(chars[i])
+					jk.letters[chars[i]] = new THREE.Mesh( letterGeo, jk.letterMaterial );
 				}
 
 
@@ -215,6 +207,8 @@
 				jk.origin = new THREE.Vector3(0, 0, 0)
 				jk.negativeZ = new THREE.Vector3(0,0,-1)
 				jk.yaxis = new THREE.Vector3(0, 1, 0)
+				jk.maxMonkeys = 100
+				jk.flyingMonkeys = []
 
 				camera.position.z = 4000
 
@@ -234,7 +228,6 @@
 					tweet.text = tweet.text.replace('&amp;', '&');
 					tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
 					tweet.text = tweet.text.replace(/\n\s*\z/, '')
-					console.log(tweet.text)
 					dispatch_flying_monkey(tweet, tweetUrls);
 				});
 
@@ -253,10 +246,7 @@
 					// monkeyAuthor.scale.copy(new THREE.Vector3(0.8, 0.8, 0.8));
 
 					monkeyAuthor.children.forEach(function(letter) {
-						console.log(letter)
-						letter.material.materials.forEach(function (material) {
-							material.color = new THREE.Color(0xaad5ff);
-						})
+						letter.material.color = new THREE.Color(0xaad5ff);
 					});
 					flying_monkey.add(monkeyAuthor);
 					return flying_monkey;
@@ -271,7 +261,7 @@
 						} else {
 							if (jk.letters[tweetletter]) {
 								new_letter = jk.letters[tweetletter].clone()
-								new_letter.material = letter_material();
+								new_letter.material = jk.letterMaterial;
 								new_letter.position.x = pos
 								pos += new_letter.geometry.boundingBox.max.x + jk.letterSpace
 								monkey_piece.add(new_letter)
@@ -296,6 +286,15 @@
 					moveTween(flyingMonkey)
 					flyingMonkey.lookAt( jk.origin )
 					scene1.add(flyingMonkey)
+					jk.flyingMonkeys.push(flyingMonkey)
+					checkMaxMonkeys();
+				}
+
+				checkMaxMonkeys = function () {
+					if (jk.flyingMonkeys.length > jk.maxMonkeys) {
+						var deadMonkey = jk.flyingMonkeys.shift();
+						removeMonkey(deadMonkey);
+					}
 				}
 
 				moveTween = function(flyingMonkey) {
@@ -304,9 +303,12 @@
 					flyingMonkey.userData.tween = new TWEEN.Tween(flyingMonkey.position)
 						.to( {x: 2 * startpos.x / 3, y: startpos.y + ( Math.random() - 0.5) * 4000, z: startpos.z + Math.random() * 2000}, 5000 + time)
 						.onComplete(function() {
-							scene1.remove(flyingMonkey)
+							removeMonkey(flyingMonkey)
 						})
 						.start();
+					flyingMonkey.eachGrandchild(function(letter) {
+						new TWEEN.Tween(letter.material).to( {opacity: 1}, 500 ).start()
+					})
 				}
 
 				removeMonkey = function(flyingMonkey) {
