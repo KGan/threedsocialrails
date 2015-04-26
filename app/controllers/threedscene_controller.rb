@@ -20,7 +20,7 @@ class ThreedsceneController < ApplicationController
         config.access_token        = "2703413065-eoy3gCO8LSKdGizpGRW4nkiPRgv1FK4OWdPQfr4"
         config.access_token_secret = "zNXDFeQZrm3uEkMabpD5KyTYPTqdMn65iGT2eJixU8omP"
       end
-      client.filter(track: "BlackLivesMatter, LiesEveryoneTells, NigeriaDecides") do |object|
+      client.filter(track: "Bae Bae") do |object|
         # debugger
         tweet = {
           text: word_wrap(object.text, line_width: $LINE_WIDTH),
