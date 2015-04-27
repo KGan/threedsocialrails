@@ -10,12 +10,22 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
-//= require jquery_ujs
-//= require turbolinks
-//= require three.min
-//= require OBJLoader.js
-//= require tween.js
-//= require helvetiker_regular.typeface.js
-//= require websocket_rails/main
-//= require OrbitControls
+// require jquery
+// require jquery_ujs
+// require turbolinks
+// require three.min
+// require OBJLoader.js
+// require tween.js
+// require helvetiker_regular.typeface.js
+// require websocket_rails/main
+// require OrbitControls
+
+// require([], function(){
+//   window.alert('Hello require.js');
+// });
+
+require(['domReady', 'threedsocial'], function (domReady) {
+  domReady(function () {
+    
+  });
+});

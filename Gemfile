@@ -30,7 +30,7 @@ gem 'openssl'
 
 gem 'twitter'
 gem 'websocket-rails'
-gem 'requirejs-rails'
+gem 'requirejs-rails', git: 'git://github.com/jwhitley/requirejs-rails.git'
 
 # vvvv we don't need this shit vvvv
 gem 'devise'

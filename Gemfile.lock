@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/jwhitley/requirejs-rails.git
+  revision: dd10bdbbbb5217958cb51b32ec20e0ea75cc330c
+  specs:
+    requirejs-rails (0.9.5)
+      railties (>= 3.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -201,8 +208,6 @@ GEM
     redis (3.2.1)
     redis-objects (1.1.0)
       redis (>= 3.0.2)
-    requirejs-rails (0.9.5)
-      railties (>= 3.1.1)
     responders (2.1.0)
       railties (>= 4.2.0, < 5)
     ruby-oembed (0.8.12)
@@ -297,7 +302,7 @@ DEPENDENCIES
   rack-livereload
   rails (= 4.2.0)
   rb-fsevent
-  requirejs-rails
+  requirejs-rails!
   ruby-oembed
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)

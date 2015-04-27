@@ -1,0 +1,20 @@
+shim:
+  'threeCore':
+    exports: 'THREE'
+  'OrbitControls':
+    deps:
+      - 'threeCore'
+    exports: 'THREE'
+  'helvetiker':
+    exports: 'helvetiker'
+  'tween':
+    exports: 'TWEEN'
+
+paths:
+  'threeCore': 'three.min'
+  'OrbitControls': 'OrbitControls'
+  'helvetiker': 'helvetiker_regular.typeface'
+  'tween': 'tween'
+  'three': 'three'
+  'threedsocial': 'threedsocial'
+  'domReady': 'domReady'
