@@ -54,7 +54,6 @@ define( ['three', 'tween', 'webSocketRails'], function (THREE, TWEEN, WebSocketR
 
     controls = new THREE.OrbitControls( camera );
     controls.damping = 0.2;
-    controls.addEventListener( 'change', render );
     scene1 = new THREE.Scene();
 
 
@@ -297,24 +296,76 @@ define( ['three', 'tween', 'webSocketRails'], function (THREE, TWEEN, WebSocketR
         raycasters: raycasters
       }
     }()
+
+    function setMouse(event) {
+      var mouse = {};
+      mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+      mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      return mouse;
+    }
+
+    document.addEventListener( 'mousedown', onMouseDown, false );
+
+    function onMouseDown( event ) {
+      var mouse = setMouse(event);
+      event.preventDefault();
+
+      jk.myRaycaster.setFromCamera( mouse, scope.object );
+
+      var intersects = jk.myRaycaster.intersectObjects( scene1.children, true );
+
+      if (intersects.length > 0) {
+        selectIntersection(intersects);
+        if (Date.now() - jk.mouseDownTime < 500) {
+          openWindow()
+        } else {
+          jk.mouseDownTime = Date.now()
+        }
+      } else {
+        controls.orbitStart(event);
+      }
+
+      document.addEventListener( 'mousemove', onMouseMove, false );
+      document.addEventListener( 'mouseup', onMouseUp, false );
+    };
+
+    function onMouseMove( event ) {
+      if (jk.selectedMonkey) {
+        moveMonkey(event)
+      } else {
+        controls.orbitCamera(event)
+      }
+    }
+
+    function moveMonkey (event) {
+      var mouse = setMouse(event);
+      jk.myRaycaster.raycasters[1].setFromCamera( mouse, scope.object );
+      jk.selectedMonkey.position.copy(jk.myRaycaster.raycasters[1].ray.direction);
+      jk.selectedMonkey.position.multiplyScalar(jk.selectedMonkey.userData.distance);
+      jk.selectedMonkey.position.add(scope.object.position);
+      jk.selectedMonkey.lookAt(jk.origin)
+    }
   }
 
-  function fetch_monkey_image(url) {
-  // TODO  talk to the socket
+  function onMouseUp () {
+
+    if (jk.selectedMonkey) {
+      jk.selectedMonkey.highlight(0x000000)
+      moveTween(jk.selectedMonkey)
+      jk.selectedMonkey = null
+    }
+
+
+    document.removeEventListener( 'mousemove', onMouseMove, false );
+    document.removeEventListener( 'mouseup', onMouseUp, false );
+
+    controls.resetState();
   }
 
 
-  function animate() {
-
+  function animate () {
     requestAnimationFrame( animate );
     TWEEN.update();
-    render();
-    // stats.update();
-  }
-
-
-  function render() {
-
     renderer.clear();
     renderer.render( scene1, camera );
   }

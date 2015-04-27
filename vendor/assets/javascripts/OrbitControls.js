@@ -282,38 +282,6 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 	}
 
-	function setMouse(event) {
-		var mouse = {};
-		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-		return mouse;
-	}
-
-	function onMouseDown( event ) {
-		var mouse = setMouse(event);
-
-
-		if ( scope.enabled === false ) { return; }
-		event.preventDefault();
-
-		jk.myRaycaster.setFromCamera( mouse, scope.object );
-
-		var intersects = jk.myRaycaster.intersectObjects( scene1.children, true );
-
-		if (intersects.length > 0) {
-			selectIntersection(intersects);
-			if (Date.now() - jk.mouseDownTime < 500) {
-				openWindow()
-			} else {
-				jk.mouseDownTime = Date.now()
-			}
-		} else {
-			orbitStart(event);
-		}
-
-		scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
-		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
-	}
 
 	function selectIntersection(intersects) {
 		console.log(intersects);
@@ -343,7 +311,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		removeMonkey(jk.selectedMonkey);
 	}
 
-	function orbitStart(event) {
+	this.orbitStart = function(event) {
 
 		if ( event.button === 0 ) {
 			if ( scope.noRotate === true ) { return; }
@@ -373,29 +341,9 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 
 	}
 
-	function onMouseMove( event ) {
 
 
-		if ( scope.enabled === false ) return;
-
-		if (jk.selectedMonkey) {
-			moveMonkey(event)
-		} else {
-			orbitCamera(event)
-		}
-	}
-
-	function moveMonkey(event) {
-		var mouse = setMouse(event);
-		jk.myRaycaster.raycasters[1].setFromCamera( mouse, scope.object );
-		jk.selectedMonkey.position.copy(jk.myRaycaster.raycasters[1].ray.direction);
-		jk.selectedMonkey.position.multiplyScalar(jk.selectedMonkey.userData.distance);
-		jk.selectedMonkey.position.add(scope.object.position);
-		jk.selectedMonkey.lookAt(jk.origin)
-	}
-
-
-	function orbitCamera(event) {
+	this.orbitCamera = function(event) {
 
 
 		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
@@ -458,23 +406,9 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 
-	function onMouseUp( /* event */ ) {
-
-		if (jk.selectedMonkey) {
-			jk.selectedMonkey.highlight(0x000000)
-			moveTween(jk.selectedMonkey)
-			jk.selectedMonkey = null
-		}
-
-		if ( scope.enabled === false ) return;
-
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		scope.domElement.removeEventListener( 'mousemove', onMouseMove, false );
-		scope.domElement.removeEventListener( 'mouseup', onMouseUp, false );
-
+	this.resetState = function () {
 		state = STATE.NONE;
-
-	}
+	};
 
 	function onMouseWheel( event ) {
 
@@ -659,7 +593,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
-	this.localElement.addEventListener( 'mousedown', onMouseDown, false );
+	// this.localElement.addEventListener( 'mousedown', onMouseDown, false );
 	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
 	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
 

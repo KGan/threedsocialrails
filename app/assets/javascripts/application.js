@@ -20,10 +20,6 @@
 // require websocket_rails/main
 // require OrbitControls
 
-// require([], function(){
-//   window.alert('Hello require.js');
-// });
-
 require.config({
   shim: {
     'threeCore': { exports: 'THREE' },
