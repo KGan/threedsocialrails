@@ -1,4 +1,4 @@
-define( ['three', 'helvetiker', 'tween'], function (THREE, helvetiker, TWEEN) {
+define( ['three', 'tween', 'webSocketRails'], function (THREE, TWEEN, WebSocketRails) {
   THREE.Group.prototype.eachGrandchild = function(callback) {
     this.children.forEach(function(child) {
       child.children.forEach(function(grandchild) {

@@ -18,7 +18,7 @@ if ( Date.now === undefined ) {
 
 }
 
-var TWEEN = TWEEN || ( function () {
+var TWEEN = ( function () {
 
 	var _tweens = [];
 
