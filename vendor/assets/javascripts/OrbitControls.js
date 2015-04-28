@@ -283,33 +283,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	}
 
 
-	function selectIntersection(intersects) {
-		console.log(intersects);
-		var pointedMonkeys = intersects.map(function (intersect) {
-			return intersect.object.parent.parent;
-		}).unique();
-		var distances = pointedMonkeys.map(function (monkey) {
-			return monkey.position.distanceTo( scope.object.position );
-		});
-		jk.selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
-		jk.selectedMonkey.highlight(0xf0c96e);
-		jk.selectedMonkey.userData.distance = jk.selectedMonkey.position.distanceTo(scope.object.position);
-		var tween = jk.selectedMonkey.userData.tween
-		if (tween) {
-			tween.stop();
-		}
-	}
 
-	function openWindow() {
-		var urls = jk.selectedMonkey.userData.tweetUrls;
-		if (urls) {
-			urls.forEach(function(tweetUrl){
-				window.open(tweetUrl);
-				window.focus();
-			});
-		}
-		removeMonkey(jk.selectedMonkey);
-	}
 
 	this.orbitStart = function(event) {
 

@@ -1,16 +1,16 @@
-# shim:
-#   'threeCore':
-#     exports: 'THREE'
-#   'OrbitControls':
-#     deps: ['threeCore']
-#     exports: 'THREE'
-#   'tween':
-#     exports: 'TWEEN'
-#
-# paths:
-#   'threeCore': 'three.min'
-#   'OrbitControls': 'OrbitControls'
-#   'tween': 'tween'
-#   'three': 'three'
-#   'threedsocial': 'threedsocial'
-#   'domReady': 'domReady'
+paths:
+  'threeCore': 'three.min'
+  'OrbitControls': 'OrbitControls'
+  'tween': 'tween'
+  'three': 'three'
+  'threedsocial': 'threedsocial'
+  'domReady': 'domReady'
+
+shim:
+  'threeCore':
+    exports: 'THREE'
+  'OrbitControls':
+    deps: ['threeCore']
+    exports: 'THREE'
+  'tween':
+    exports: 'TWEEN'
