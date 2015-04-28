@@ -1,4 +1,4 @@
-define(['scene'], function (THREE) {
+define(['scene', 'three', 'tween'], function (scene, THREE, TWEEN) {
   var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
   light1.position.set( 10, 1, 1 );
   scene.add( light1 );

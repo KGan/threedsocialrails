@@ -1,3 +1,3 @@
-define( ["threeCore", "OrbitControls", "utils/eachGrandchild"], function( THREE ) {
+define( ["threeCore", "OrbitControls", "utils/threeUtils"], function( THREE ) {
   return THREE;
 } );

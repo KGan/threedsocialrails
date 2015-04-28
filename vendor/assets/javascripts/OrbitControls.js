@@ -313,7 +313,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
 
 
-	}
+	};
 
 
 
@@ -371,13 +371,8 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
 		scope.update();
 
-	}
+	};
 
-	THREE.Group.prototype.highlight = function(color) {
-		this.eachGrandchild(function(letter) {
-			letter.material.emissive = new THREE.Color(color);
-		});
-	}
 
 
 	this.resetState = function () {
