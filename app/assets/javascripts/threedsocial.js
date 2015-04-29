@@ -42,9 +42,15 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         intersects = myRaycaster.intersectObjects(scene.children, true);
 
         if (intersects.length > 0) {
+
           selectIntersection(intersects, mouse);
-          if (Date.now() - mouseDownTime < 500) {
+          if (event.button === 2) {
+            monkeys.remove(selectedMonkey);
+            selectedMonkey = null;
+          } else if (Date.now() - mouseDownTime < 500) {
             openWindow();
+            monkeys.remove(selectedMonkey);
+            selectedMonkey = null;
           } else {
             mouseDownTime = Date.now();
           }
