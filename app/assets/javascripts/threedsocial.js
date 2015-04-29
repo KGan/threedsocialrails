@@ -1,8 +1,9 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'flyingMonkey', 'raycaster', 'utils/unique'],
-  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, flyingMonkey, myRaycaster) {
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'utils/unique'],
+  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
-    distances, tween, urls, mouseDownTime = 0, highlightColor = 0xf0c96e;
+    distances, tween, urls, mouseDownTime = 0,
+    highlightColor = new THREE.Color(0xf0c96e);
 
   return {
     init: function () {
@@ -21,7 +22,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         tweet.text = tweet.text.replace('&amp;', '&');
         tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
         tweet.text = tweet.text.replace(/\n\s*\z/, '');
-        flyingMonkey.dispatch(tweet, tweetUrls);
+        monkeys.dispatch(tweet, tweetUrls);
       });
 
       document.addEventListener( 'mousedown', onMouseDown, false );
@@ -56,7 +57,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
 
       function onMouseMove( event ) {
         if (selectedMonkey) {
-          flyingMonkey.move(selectedMonkey, setMouse(event));
+          selectedMonkey.move(setMouse(event));
         } else {
           controls.orbitCamera(event);
         }
@@ -73,6 +74,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
         selectedMonkey.highlight(highlightColor);
         selectedMonkey.userData.distance = selectedMonkey.position.distanceTo(camera.position);
+        selectedMonkey.userData.selected = true;
         tween = selectedMonkey.userData.tween;
         if (tween) {
           tween.stop();
@@ -87,14 +89,15 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
             window.focus();
           });
         }
-        flyingMonkey.remove(selectedMonkey);
+        monkeys.remove(selectedMonkey);
       }
 
 
       function onMouseUp () {
         if (selectedMonkey) {
-          selectedMonkey.highlight(0x000000);
-          flyingMonkey.wander(selectedMonkey);
+          selectedMonkey.dehighlight();
+          selectedMonkey.userData.selected = false;
+          selectedMonkey.wander();
           selectedMonkey = null;
         }
 

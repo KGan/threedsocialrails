@@ -7,11 +7,6 @@ define (['threeCore'], function (THREE) {
     });
   };
 
-  THREE.Group.prototype.highlight = function(color) {
-    this.eachGrandchild(function(letter) {
-      letter.material.emissive = new THREE.Color(color);
-    });
-  };
 
   return THREE;
 });

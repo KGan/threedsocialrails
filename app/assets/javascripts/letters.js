@@ -3,16 +3,20 @@ define(['three'], function (THREE) {
   letters.textWidth = 50;
   letters.textSize = 100;
 
-  letters.material = new THREE.MeshPhongMaterial( {
-    color: 0xaaaaff,
-    shading: THREE.FlatShading,
-    refractionRatio: 0.6,
-    reflectivity: 0.2,
-    specular: 0xffcccc,
-    shininess: 20,
-    transparent: true,
-    opacity: 0
-  });
+  letters.newMaterial = function () {
+    return new THREE.MeshPhongMaterial({
+      color: 0xaaaaff,
+      shading: THREE.FlatShading,
+      refractionRatio: 0.6,
+      reflectivity: 0.2,
+      specular: 0xffcccc,
+      shininess: 20,
+      transparent: true,
+      opacity: 1
+    });
+  };
+
+  letters.material = letters.newMaterial();
 
   var chars = [].concat.apply([], Array(94))
     .map(function(_, i) {
@@ -37,7 +41,7 @@ define(['three'], function (THREE) {
     letterGeo.computeVertexNormals();
 
     var centerOffset = -0.5 * ( letterGeo.boundingBox.max.x - letterGeo.boundingBox.min.x );
-    letters[chars[i]] = new THREE.Mesh( letterGeo, letters.material );
+    letters[chars[i]] = new THREE.Mesh(letterGeo, letters.material);
   }
 
   return letters;
