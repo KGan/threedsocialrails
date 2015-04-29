@@ -1,4 +1,4 @@
-define(['three', 'utils/utils'], function (THREE) {
+define(['three', 'underscore'], function (THREE, _) {
   var size = 0.03;
   var diffs = [[0,0], [size,0], [-size,0], [0,size], [0,-size], [size,size], [size,-size], [-size, size], [-size,-size]];
   var raycasters = [];
@@ -11,7 +11,7 @@ define(['three', 'utils/utils'], function (THREE) {
       raycasters.forEach(function(raycaster) {
         results = results.concat(raycaster.intersectObjects(objects, recursive));
       });
-      return results.unique();
+      return _.uniq(results);
     },
 
     setFromCamera: function(mouse, camera) {

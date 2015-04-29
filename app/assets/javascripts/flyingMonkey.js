@@ -1,8 +1,8 @@
-define(['three', 'letters', 'tween', 'raycaster', 'utils/utils'],
-  function (THREE, letters, TWEEN, myRaycaster, utils) {
+define(['three', 'letters', 'tween', 'raycaster', 'underscore'],
+  function (THREE, letters, TWEEN, myRaycaster, _) {
   var highlightFade = 200, fadeTime = 450, origin = new THREE.Vector3(0, 0, 0);
 
-  utils.extend(THREE.Group.prototype, {
+  _.extend(THREE.Group.prototype, {
     highlight: function(color) {
       var highlightMaterial = letters.newMaterial();
       this.eachGrandchild(function(letter) {
@@ -14,6 +14,9 @@ define(['three', 'letters', 'tween', 'raycaster', 'utils/utils'],
           g: color.g,
           b: color.b
         }, highlightFade)
+        .onComplete(function() {
+          // highlightMaterial.emissive = color;
+        })
         .start();
     },
 
@@ -50,8 +53,8 @@ define(['three', 'letters', 'tween', 'raycaster', 'utils/utils'],
     move: function (mouse) {
       var oneRaycaster = myRaycaster.raycasters[1];
       oneRaycaster.setFromCamera({
-        x: mouse.x + this.selectOffset.x,
-        y: mouse.y + this.selectOffset.y
+        x: mouse.x + this.userData.selectOffset.x,
+        y: mouse.y + this.userData.selectOffset.y
       }, camera);
       this.position.copy(oneRaycaster.ray.direction)
         .multiplyScalar(this.userData.distance)

@@ -10,22 +10,15 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-// require jquery
-// require jquery_ujs
-// require turbolinks
-// require three.min
-// require OBJLoader.js
-// require tween.js
-// require helvetiker_regular.typeface.js
-// require websocket_rails/main
-// require OrbitControls
+
 
 require.config({
   shim: {
     'threeCore': { exports: 'THREE' },
     'OrbitControls': {deps: ['threeCore'], exports: 'THREE'},
     'tween': { exports: 'TWEEN' },
-    'webSocketRails': { exports: 'WebSocketRails'}
+    'webSocketRails': { exports: 'WebSocketRails'},
+    'underscore': { expors: '_' }
   },
 
   paths: {

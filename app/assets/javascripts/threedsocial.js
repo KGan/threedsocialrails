@@ -1,8 +1,9 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'utils/utils'],
-  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster, utils) {
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore'],
+  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster, _) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
-    distances, tween, urls, mouseDownTime = 0,
+    distances, tween, urls, upperCorner,
+    mouseDownTime = 0,
     highlightColor = new THREE.Color(0xf0c96e);
 
   return {
@@ -64,16 +65,16 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       }
 
       function selectIntersection(intersects, mouse) {
-        pointedMonkeys = intersects.map(function (intersect) {
+        pointedMonkeys = _.uniq(intersects.map(function (intersect) {
           return intersect.object.parent.parent;
-        }).unique();
+        }));
         distances = pointedMonkeys.map(function (monkey) {
           return monkey.position.distanceTo( camera.position );
         });
         selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
         selectedMonkey.highlight(highlightColor);
-        var upperCorner = selectedMonkey.position.clone().project(camera);
-        utils.extend(userData, {
+        upperCorner = selectedMonkey.position.clone().project(camera);
+        _.extend(selectedMonkey.userData, {
           selectOffset: {
             x: upperCorner.x - mouse.x,
             y: upperCorner.y - mouse.y
