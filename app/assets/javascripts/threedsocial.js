@@ -1,5 +1,5 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'utils/unique'],
-  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster) {
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'utils/utils'],
+  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster, utils) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
     distances, tween, urls, mouseDownTime = 0,
@@ -41,7 +41,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         intersects = myRaycaster.intersectObjects(scene.children, true);
 
         if (intersects.length > 0) {
-          selectIntersection(intersects);
+          selectIntersection(intersects, mouse);
           if (Date.now() - mouseDownTime < 500) {
             openWindow();
           } else {
@@ -63,8 +63,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         }
       }
 
-      function selectIntersection(intersects) {
-        console.log(intersects);
+      function selectIntersection(intersects, mouse) {
         pointedMonkeys = intersects.map(function (intersect) {
           return intersect.object.parent.parent;
         }).unique();
@@ -73,8 +72,15 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         });
         selectedMonkey = pointedMonkeys[distances.indexOf(Math.min.apply(null, distances))];
         selectedMonkey.highlight(highlightColor);
-        selectedMonkey.userData.distance = selectedMonkey.position.distanceTo(camera.position);
-        selectedMonkey.userData.selected = true;
+        var upperCorner = selectedMonkey.position.clone().project(camera);
+        utils.extend(userData, {
+          selectOffset: {
+            x: upperCorner.x - mouse.x,
+            y: upperCorner.y - mouse.y
+          },
+          distance: selectedMonkey.position.distanceTo(camera.position),
+          selected: true
+        });
         tween = selectedMonkey.userData.tween;
         if (tween) {
           tween.stop();

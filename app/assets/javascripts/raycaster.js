@@ -1,4 +1,4 @@
-define(['three', 'utils/unique'], function (THREE) {
+define(['three', 'utils/utils'], function (THREE) {
   var size = 0.03;
   var diffs = [[0,0], [size,0], [-size,0], [0,size], [0,-size], [size,size], [size,-size], [-size, size], [-size,-size]];
   var raycasters = [];
