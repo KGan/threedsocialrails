@@ -13,11 +13,11 @@ define(['scene', 'three', 'tween'], function (scene, THREE, TWEEN) {
   light2.position.set( 5, 700, 1 );
   scene.add( light2 );
 
-  new TWEEN.Tween (light2.position)
-    .to({x: 0, y: -700, z: 0}, 4000)
-    .repeat(Infinity)
-    .yoyo(true)
-    .start();
+  // new TWEEN.Tween (light2.position)
+  //   .to({x: 0, y: -700, z: 0}, 4000)
+  //   .repeat(Infinity)
+  //   .yoyo(true)
+  //   .start();
 
 
   var light3 = new THREE.DirectionalLight( 0x999999, 0.6 );
