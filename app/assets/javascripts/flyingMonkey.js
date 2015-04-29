@@ -49,9 +49,9 @@ define(['three', 'letters', 'tween', 'raycaster'],
   THREE.Group.prototype.move = function (mouse) {
     var oneRaycaster = myRaycaster.raycasters[1];
     oneRaycaster.setFromCamera(mouse, camera);
-    this.position.copy(oneRaycaster.ray.direction)
-      .multiplyScalar(this.userData.distance)
-      .add(camera.position);
+    this.position.copy(oneRaycaster.ray.direction);
+    this.position.multiplyScalar(this.userData.distance);
+    this.position.add(camera.position);
     this.lookAt(origin);
   };
 
