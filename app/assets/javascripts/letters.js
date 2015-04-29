@@ -11,8 +11,6 @@ define(['three'], function (THREE) {
       reflectivity: 0.2,
       specular: 0xffcccc,
       shininess: 20,
-      transparent: true,
-      opacity: 1
     });
   };
 

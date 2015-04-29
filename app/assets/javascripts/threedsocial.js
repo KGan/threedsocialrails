@@ -1,4 +1,4 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore'],
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore', 'lights'],
   function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster, _) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
