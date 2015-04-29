@@ -8,36 +8,43 @@ define(['three', 'letters', 'tween', 'raycaster', 'underscore'],
       this.eachGrandchild(function(letter) {
         letter.material = highlightMaterial;
       });
+      this.userData.fading = true;
+      setTimeout(function () {
+        this.userData.fading = false;
+        highlightMaterial.emissive.set(color);
+      }.bind(this), highlightFade);
       new TWEEN.Tween(highlightMaterial.emissive)
         .to({
           r: color.r,
           g: color.g,
           b: color.b
         }, highlightFade)
-        .onComplete(function() {
-          // highlightMaterial.emissive = color;
-        })
         .start();
     },
 
     dehighlight: function () {
-      var highlightMaterial = this.children[0].children[0].material;
+      var highlightMaterial, i = -1;
+      do {
+        i++;
+      } while (!this.children[0].children[i]);
+      highlightMaterial = this.children[0].children[i].material;
+      setTimeout(function () {
+        this.eachGrandchild(function(letter) {
+          letter.material = letters.material;
+        });
+      }.bind(this), highlightFade);
+
       new TWEEN.Tween(highlightMaterial.emissive)
         .to({
           r: 0,
           g: 0,
           b: 0
         }, highlightFade)
-        .onComplete(function () {
-          this.eachGrandchild(function(letter) {
-            letter.material = letters.material;
-          });
-        }.bind(this))
         .start();
     },
 
     fade: function (fromOpacity, toOpacity, callback) {
-      fadeMaterial = letters.newMaterial();
+      var fadeMaterial = letters.newMaterial();
       fadeMaterial.opacity = fromOpacity;
       this.eachGrandchild(function (letter) {
         letter.material = fadeMaterial;
@@ -59,7 +66,7 @@ define(['three', 'letters', 'tween', 'raycaster', 'underscore'],
       this.position.copy(oneRaycaster.ray.direction)
         .multiplyScalar(this.userData.distance)
         .add(camera.position);
-      this.lookAt(origin);
+      if (!this.userData.fading) this.lookAt(origin);
     },
 
     wander: function () {
