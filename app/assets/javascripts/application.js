@@ -22,5 +22,6 @@ require(['domReady', 'threedsocial'], function (domReady, tds) {
   domReady(function () {
     tds.init();
     tds.animate();
+    tds.zoomIn();
   });
 });

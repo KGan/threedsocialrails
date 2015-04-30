@@ -88,6 +88,12 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	var dollyEnd = new THREE.Vector2();
 	var dollyDelta = new THREE.Vector2();
 
+	// these allow us to set Phi, Theta, and Radius from the outside
+
+	this.setPhi = null;
+	this.setTheta = null;
+	this.setRadius = null;
+
 	var phiDelta = 0;
 	var thetaDelta = 0;
 	var scale = 1;
@@ -99,6 +105,7 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 	var state = STATE.NONE;
 
 	// events
+
 
 	var changeEvent = { type: 'change' };
 
@@ -232,13 +239,20 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
 		theta += thetaDelta;
 		phi += phiDelta;
 
+		phi = this.setPhi || phi;  // if we've used the Phi, we put it in
+		theta = this.setTheta || theta;
+
 		// restrict phi to be between desired limits
 		phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
 
 		// restrict phi to be betwee EPS and PI-EPS
 		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
-		var radius = offset.length() * scale;
+		var radius = this.setRadius || offset.length() * scale;
+
+		this.setTheta = null;
+		this.setPhi = null;
+		this.setRadius = null;
 
 		// restrict radius to be between desired limits
 		radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );

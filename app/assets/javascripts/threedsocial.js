@@ -36,6 +36,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       }
 
       function onMouseDown( event ) {
+        // this.zoomIn();
         mouse = setMouse(event);
         event.preventDefault();
         myRaycaster.setFromCamera(mouse, camera);
@@ -121,11 +122,34 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       }
     },
 
+
     animate: function () {
       requestAnimationFrame(this.animate.bind(this));
       TWEEN.update();
       renderer.clear();
       renderer.render(scene, camera);
+    },
+
+    zoomIn: function () {
+      controls.setRadius = 100000;
+      new TWEEN.Tween(controls)
+        .to({ setRadius: 500, setTheta: 15 }, 8000)
+        .onUpdate(function() {
+          controls.update();
+        })
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+      controls.setPhi = 1;
+      new TWEEN.Tween(controls)
+        .to({ setPhi: 2 }, 1500)
+        .repeat(2)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .yoyo(true)
+        .start();
     }
   };
 });
+
+
+
+//    .1 * y = 2.    when x = 0, y = 1, when x = 1, y = 20  20 * x

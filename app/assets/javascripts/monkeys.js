@@ -1,6 +1,5 @@
-define(['three', 'letters', 'scene', 'tween', 'camera', 'flyingMonkey'],
-  function (THREE, letters, scene, TWEEN, camera) {
-
+define(['three', 'letters', 'scene', 'camera', 'flyingMonkey'],
+  function (THREE, letters, scene, camera) {
 
   var flyingMonkeys = [],
     origin = new THREE.Vector3(0, 0, 0),
