@@ -10,22 +10,6 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
     init: function () {
       camera.position.z = 4000;
 
-      dispatcher = new WebSocketRails('localhost:3000/websocket');
-
-      tweetChannel = dispatcher.subscribe('tweets');
-      tweetChannel.bind('new', function(tweet) {
-        tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
-        if(tweetUrls) {
-          tweetUrls.forEach(function(tweetUrl) {
-            tweet.text = tweet.text.replace(tweetUrl, '');
-          });
-        }
-        tweet.text = tweet.text.replace('&amp;', '&');
-        tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
-        tweet.text = tweet.text.replace(/\n\s*\z/, '');
-        monkeys.dispatch(tweet, tweetUrls);
-      });
-
       document.addEventListener( 'mousedown', onMouseDown, false );
 
       function setMouse(event) {

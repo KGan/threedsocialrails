@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
       if user.nil?
         user = User.new(
             name: auth.extra.raw_info.name,
-            email: email ? email : "change@me.com",
+            email: email ? email : "change-#{auth.uid}@me.com",
             password: Devise.friendly_token[0,20]
         )
         user.save!

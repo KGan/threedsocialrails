@@ -4,7 +4,10 @@ require.config({
     'OrbitControls': {deps: ['threeCore'], exports: 'THREE'},
     'tween': { exports: 'TWEEN' },
     'webSocketRails': { exports: 'WebSocketRails'},
-    'underscore': { expors: '_' }
+    'tour': { deps:['jquery'], exports: 'Tour'},
+    'datGui': { exports: 'dat.GUI' },
+    'jquery': { exports: '$' },
+    'underscore': { exports: '_' }
   },
 
   paths: {
@@ -14,13 +17,17 @@ require.config({
     'three': 'three',
     'threedsocial': 'threedsocial',
     'domReady': 'domReady',
-    'webSocketRails': 'websocket_rails/main'
+    'webSocketRails': 'websocket_rails/main',
+    'tour': 'bootstrap-tour',
+    'bootstrap': 'bootstrap-sprockets',
+    'underscore': 'underscore-min',
+    'welcome': 'welcome',
+    'datGui': 'dat.gui.min'
   }
 });
 
-require(['domReady', 'threedsocial'], function (domReady, tds) {
+require(['domReady', 'welcome'], function (domReady, welcome) {
   domReady(function () {
-    tds.init();
-    tds.animate();
+    welcome.welcome();
   });
 });

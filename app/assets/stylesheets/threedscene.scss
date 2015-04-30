@@ -1,3 +1,55 @@
 // Place all the styles related to the threedscene controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+div.threedsocial {
+  z-index:1;
+  position: fixed;
+  top: 20px;
+  height: calc(100vh - 20px);
+}
+
+body {
+  canvas.background {
+    z-index: -1;
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+    width:100%;
+    height: calc(100vh - 20px);
+    top:20px;
+  }
+}
+
+div.dg {
+  z-index: 2;
+  .dg.a {
+    margin-right: 0;
+  }
+  li:nth-child(1) .property-name {
+    text-align:center;
+  }
+  li:nth-child(2) .property-name {
+    text-align:center;
+    width: 100%
+  }
+  width: 100%;
+  span.property-name {
+    width: 20%;
+    &+div > input[type='text'] {
+      text-align:center;
+      margin-top: 0;
+    }
+  }
+  div.close-button {
+    width:100%;
+  }
+  &:after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+}
