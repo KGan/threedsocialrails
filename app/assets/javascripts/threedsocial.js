@@ -108,8 +108,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
     animate: function () {
       requestAnimationFrame(this.animate.bind(this));
       TWEEN.update();
-      renderer.clear();
-      renderer.render(scene, camera);
+      renderer.renderer.clear();
+      renderer.renderer.render(scene, camera);
     }
   };
 });

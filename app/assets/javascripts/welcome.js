@@ -1,4 +1,4 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datGui' ], function(tds, _, Tour, WebSocketRails, monkeys, GUI){
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datGui', 'renderer'], function(tds, _, Tour, WebSocketRails, monkeys, GUI, renderer){
   var init, animate, ifn, dispatcher, gui, tour, tweetOptions;
   init = _.once(tds.init);
   animate = _.once(tds.animate.bind(tds));
@@ -7,22 +7,20 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
   function startTweetStream(channel) {
     tweetChannel = dispatcher.subscribe(channel);
     tweetChannel.bind('new', function(tweet) {
-      var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text)
+      var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
       if(tweetUrls) {
         tweetUrls.forEach(function(tweetUrl) {
-          tweet.text = tweet.text.replace(tweetUrl, '')
-        })
+          tweet.text = tweet.text.replace(tweetUrl, '');
+        });
       }
       tweet.text = tweet.text.replace('&amp;', '&');
       tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
-      tweet.text = tweet.text.replace(/\n\s*\z/, '')
+      tweet.text = tweet.text.replace(/\n\s*\z/, '');
       monkeys.dispatch(tweet, tweetUrls);
     });
   }
 
   function initTweetStream() {
-    init();
-    animate();
     if(dispatcher) dispatcher.trigger('connection_closed');
     dispatcher = new WebSocketRails('localhost:3000/websocket');
 
@@ -33,7 +31,6 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
         startTweetStream(response.channel_name);
       }
     );
-
   }
 
   function customDebounce(fn, wait, otherwise, immediate) {
@@ -52,7 +49,7 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
       } else {
         if (otherwise && timeout) otherwise();
       }
-    }
+    };
   }
 
   function TweetOpts() {
@@ -62,13 +59,11 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
   }
 
   function gatherUserOptions() {
-    ifn = customDebounce(initTweetStream, 5000, function(){ alert('You must wait 5 seconds between changing tags')}, true);
+    ifn = customDebounce(initTweetStream, 2000, function(){ alert('You must wait 2 seconds between changing tags'); }, true);
     tweetOptions = new TweetOpts();
     gui = new GUI({
-      //autoPlace:false,
         width: '90%',
     });
-    // gui.add(tweetOptions, 'message');
     gui.add(tweetOptions, 'tags');
     gui.add(tweetOptions, 'Go');
     tour = new Tour({
@@ -100,8 +95,14 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
   }
   return {
     welcome: function() {
+      init();
+      animate();
+      tweetOptions = new TweetOpts();
+      tweetOptions.tags = 'Bae Bae';
+      initTweetStream();
+      renderer.fadeBackground();
       gatherUserOptions();
     }
-  }
+  };
 
 });
