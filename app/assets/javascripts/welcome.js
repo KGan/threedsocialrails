@@ -9,7 +9,7 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
     tweetOptions.tags = $('#tags').val().replace(/#/g, '');
     if(tweetOptions.tags.length < 1) return;
     $('#tweetsModal').modal('hide');
-    tds.initTweetStream();
+    tds.initTweetStream(tweetOptions);
   }
 
   function gatherUserOptions() {

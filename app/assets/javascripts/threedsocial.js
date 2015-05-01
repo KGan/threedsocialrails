@@ -27,7 +27,6 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         intersects = myRaycaster.intersectObjects(scene.children, true);
 
         if (intersects.length > 0) {
-
           selectIntersection(intersects, mouse);
           if (event.button === 2) {
             monkeys.remove(selectedMonkey);
@@ -159,7 +158,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       renderer.render(scene, camera);
     },
 
-    initTweetStream: function () {
+    initTweetStream: function (tweetOptions) {
       if (dispatcher) dispatcher.trigger('connection_closed');
       dispatcher = new WebSocketRails('localhost:3000/websocket');
       dispatcher.trigger(
@@ -168,6 +167,9 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         function(response) {
           populate(response.tweets);
           zoomIn(response.channel_name);
+        },
+        function(response) {
+          console.log(response);
         }
       );
     }
