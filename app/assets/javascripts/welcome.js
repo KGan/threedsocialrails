@@ -28,7 +28,12 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
       'new',
       tweetOptions,
       function(response) {
+        console.log(response);
         startTweetStream(response.channel_name);
+      },
+      function(response) {
+        console.log('failed to trigger new');
+        console.log(response);
       }
     );
   }
@@ -43,7 +48,8 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
 
   function gatherUserOptions() {
     $('#tweetsModal').modal('show');
-    $('#tweetsModal form').on('submit', ifn);
+    $('#tweetsModal').on('bs.modal.shown', function(){});
+    $('#tweetsModal form').on('submit', submitTags);
     tour = new Tour({
       steps: [
         {//step 1
@@ -52,10 +58,10 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
           orphan: true,
         },
         {//step 2
-          element: '#tweetsModal',
+          element: '#tags',
           title: 'Choose some tags',
           content: "Type in some comma delimited tags, no hashtags needed.\nWe've filled in the top 10 trending worldwide for you as suggestions",
-          placement: 'bottom'
+          placement: 'top'
         },
         {//step 3
           title: '3dSocial',
