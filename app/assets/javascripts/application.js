@@ -7,7 +7,8 @@ require.config({
     'tour': { deps:['jquery'], exports: 'Tour'},
     'datGui': { exports: 'dat.GUI' },
     'jquery': { exports: '$' },
-    'underscore': { exports: '_' }
+    'underscore': { exports: '_' },
+    'bootstrap': { deps:['jquery'] }
   },
 
   paths: {

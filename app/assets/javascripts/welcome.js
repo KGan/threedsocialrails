@@ -1,4 +1,4 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery'], function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery', 'bootstrap'], function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   var init, animate, ifn, dispatcher, tour, tweetOptions = {};
   init = _.once(tds.init);
   animate = _.once(tds.animate.bind(tds));
@@ -36,6 +36,7 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
   function submitTags(e) {
     e.preventDefault();
     tweetOptions.tags = $('#tags').val();
+    if(tweetOptions.tags.length < 1) return;
     $('#tweetsModal').modal('hide');
     initTweetStream();
   }
