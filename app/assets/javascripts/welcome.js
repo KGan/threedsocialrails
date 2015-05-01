@@ -1,5 +1,5 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datGui', 'renderer'], function(tds, _, Tour, WebSocketRails, monkeys, GUI, renderer){
-  var init, animate, ifn, dispatcher, gui, tour, tweetOptions;
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery'], function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
+  var init, animate, ifn, dispatcher, tour, tweetOptions = {};
   init = _.once(tds.init);
   animate = _.once(tds.animate.bind(tds));
 
@@ -33,77 +33,46 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
     );
   }
 
-  function customDebounce(fn, wait, otherwise, immediate) {
-    var timeout;
-    return function() {
-      var context = this, args = arguments;
-      var later = function() {
-        timeout = null;
-        if ( !immediate ) fn.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) {
-        fn.apply(context, args);
-      } else {
-        if (otherwise && timeout) otherwise();
-      }
-    };
-  }
-
-  function TweetOpts() {
-    // this.message = 'Enter some tags separated by commas';
-    this.tags = window.trending_hashtags;
-    if (!this.tags) {
-      this.tags = 'Bae Bae';
-      console.log('Could not load trending hashtags, loading bae preset');
-    }
-    this.Go = ifn;
+  function submitTags(e) {
+    e.preventDefault();
+    tweetOptions.tags = $('#tags').val();
+    $('#tweetsModal').modal('hide');
+    initTweetStream();
   }
 
   function gatherUserOptions() {
-    ifn = customDebounce(initTweetStream, 2000, function(){ alert('You must wait 2 seconds between changing tags'); }, true);
-    tweetOptions = new TweetOpts();
-    gui = new GUI({
-        width: '90%',
-    });
-    gui.add(tweetOptions, 'tags');
-    gui.add(tweetOptions, 'Go');
+    $('#tweetsModal').modal('show');
+    $('#tweetsModal form').on('submit', ifn);
     tour = new Tour({
       steps: [
         {//step 1
           title: 'Welcome to 3dSocial!',
           content: "This app streams twitter feeds of your choice to a 3d world.",
           orphan: true,
-          backdrop: true
         },
         {//step 2
-          element: '.dg.main',
+          element: '#tweetsModal',
           title: 'Choose some tags',
-          content: 'Type in some comma delimited tags, no hashtags needed. eg "Kardashian GreysAnatomy EarthDay" ',
-          backdrop: true,
+          content: "Type in some comma delimited tags, no hashtags needed.\nWe've filled in the top 10 trending worldwide for you as suggestions",
           placement: 'bottom'
         },
         {//step 3
           title: '3dSocial',
-          content: "Streams will come in. Click to drag them around, double-click to open linked article in the tweet. Drag in open space to move the camera (orbit controls)",
+          content: "Tweets will stream in. Click to drag them around \nDouble-click to open linked article in the tweet\nDrag in open space to move the camera",
           orphan: true,
-          backdrop: true
         }
       ],
-
     });
     tour.init();
     tour.start();
+
   }
   return {
     welcome: function() {
       init();
       animate();
-      tweetOptions = new TweetOpts();
+      tweetOptions.tags = 'Bae Bae';
       initTweetStream();
-      // renderer.fadeBackground();
       gatherUserOptions();
     }
   };

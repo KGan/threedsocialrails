@@ -38,8 +38,7 @@ class TweetsController < WebsocketRails::BaseController
         config.access_token        = "2703413065-eoy3gCO8LSKdGizpGRW4nkiPRgv1FK4OWdPQfr4"
         config.access_token_secret = "zNXDFeQZrm3uEkMabpD5KyTYPTqdMn65iGT2eJixU8omP"
     end
-
-    query_terms = query.split(',').strip
+    query_terms = query.split(',').map(&:strip)
     results_per_term = 50 / query_terms.length
     @tweets = []
     query_terms.each do |qt|
@@ -55,6 +54,7 @@ class TweetsController < WebsocketRails::BaseController
       {}.tap do |tweet_obj|
         tweet_obj[:text] = word_wrap(tweet.text, line_width: $LINE_WIDTH)
         tweet_obj[:author] = '@' + tweet.attrs[:user][:screen_name]
+        puts tweet_obj
       end
     end
 end

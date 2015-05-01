@@ -10,8 +10,22 @@
 	</head>
 
 	<body>
-    <script>
-      window.trending_hashtags = "<%= @trends %>";
-    </script>
+				<!-- Modal -->
+		<div class="modal fade" id="tweetsModal" tabindex="-1" role="dialog" aria-labelledby="tweetsModalLabel" aria-hidden="true">
+		  <div class="container">
+		    <div class="row">
+		      <div class="col-sm-6 col-sm-offset-3 text-center">
+		        <form class='tags-form'>
+							<div class='form-group'>
+								<label class='input-group'>Tags To Stream</label>
+								<input class='tweet-tags' placeholder='<%= @trends %>' id='tags'>
+							</div>
+							<button class='form-control'>Go!</button>
+						</form>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
 	</body>
 </html>
