@@ -78,6 +78,24 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         }
       }
 
+      function startTweetStream(channel) {
+        tweetChannel = dispatcher.subscribe(channel);
+        tweetChannel.bind('new', dispatchMonkey);
+      }
+
+      function dispatchMonkey(tweet, starting) {
+        var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
+        if(tweetUrls) {
+          tweetUrls.forEach(function(tweetUrl) {
+            tweet.text = tweet.text.replace(tweetUrl, '');
+          });
+        }
+        tweet.text = tweet.text.replace('&amp;', '&');
+        tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
+        tweet.text = tweet.text.replace(/\n\s*\z/, '');
+        monkeys.dispatch(tweet, tweetUrls, starting);
+      }
+
       function openWindow() {
         urls = selectedMonkey.userData.tweetUrls;
         if (urls) {
@@ -88,7 +106,6 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         }
         monkeys.remove(selectedMonkey);
       }
-
 
       function onMouseUp () {
         if (selectedMonkey) {
@@ -103,8 +120,37 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
 
         controls.resetState();
       }
-    },
 
+      function zoomIn (channel) {
+        controls.setRadius = 100000;
+        new TWEEN.Tween(controls)
+          .to({ setRadius: 500, setTheta: 15 }, 8000)
+          .onUpdate(function() {
+            controls.update();
+          })
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .onComplete(function () {
+            monkeys.monkeys().forEach(function(flyingMonkey) {
+              flyingMonkey.wander();
+            });
+            startTweetStream();
+          })
+          .start();
+        controls.setPhi = 1;
+        new TWEEN.Tween(controls)
+          .to({ setPhi: 2 }, 1500)
+          .repeat(2)
+          .easing(TWEEN.Easing.Sinusoidal.InOut)
+          .yoyo(true)
+          .start();
+      }
+
+      function populate (tweets) {
+        tweets.forEach(function (tweet) {
+          dispatchMonkey(tweet, true);
+        });
+      }
+    },   // this is the end of init()
 
     animate: function () {
       requestAnimationFrame(this.animate.bind(this));
@@ -113,26 +159,17 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       renderer.render(scene, camera);
     },
 
-    zoomIn: function () {
-      controls.setRadius = 100000;
-      new TWEEN.Tween(controls)
-        .to({ setRadius: 500, setTheta: 15 }, 8000)
-        .onUpdate(function() {
-          controls.update();
-        })
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start();
-      controls.setPhi = 1;
-      new TWEEN.Tween(controls)
-        .to({ setPhi: 2 }, 1500)
-        .repeat(2)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .yoyo(true)
-        .start();
+    initTweetStream: function () {
+      if (dispatcher) dispatcher.trigger('connection_closed');
+      dispatcher = new WebSocketRails('localhost:3000/websocket');
+      dispatcher.trigger(
+        'new',
+        tweetOptions,
+        function(response) {
+          populate(response.tweets);
+          zoomIn(response.channel_name);
+        }
+      );
     }
   };
 });
-
-
-
-//    .1 * y = 2.    when x = 0, y = 1, when x = 1, y = 20  20 * x

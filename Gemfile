@@ -23,18 +23,12 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'figaro'
 
-gem 'ruby-oembed'
 gem 'openssl'
 
 gem 'twitter'
 gem 'websocket-rails'
 gem 'underscore-rails'
 gem 'requirejs-rails', git: 'git://github.com/jwhitley/requirejs-rails.git'
-
-# vvvv we don't need this shit vvvv
-gem 'devise'
-gem 'omniauth'
-gem 'omniauth-twitter'
 
 
 # Use ActiveModel has_secure_password

@@ -16,10 +16,13 @@
 		    <div class="row">
 		        <form class='tags-form'>
 							<div class='form-group'>
-								<label class='input-group form-control'>Tags To Stream</label>
-								<input class='form-control tweet-tags' placeholder='<%= @trends %>' id='tags'>
+								<label>THE TWITTERSPHERE
+								</label>
+								<input class='form-control tweet-tags' placeholder='type trends to follow' id='tags'>
 							</div>
-							<button class='form-control'>Go!</button>
+							<div class="trends">
+								currently trending: <%= @trends %>
+							</div>
 						</form>
 		    </div>
 		  </div>

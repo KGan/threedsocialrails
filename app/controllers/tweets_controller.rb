@@ -2,6 +2,7 @@ class TweetsController < WebsocketRails::BaseController
   include ActionView::Helpers::TextHelper
   $LINE_WIDTH = 30
   def start_new
+    # trigger_failure
     fetch_fifty(message["tags"])
     Thread.abort_on_exception = true
     controller_store[:uids] ||= []
@@ -43,14 +44,14 @@ class TweetsController < WebsocketRails::BaseController
     results_per_term = 50 / query_terms.length
     @tweets = []
     query_terms.each do |qt|
-      @tweets.concat(client.search("##{qt}",:count => results_per_term, :result_type => 'recent').map do |tweet| 
+      @tweets.concat(client.search("##{qt}",:count => results_per_term, :result_type => 'recent').map do |tweet|
         extract_tweet(tweet)
       end )
-    end 
-    
+    end
+
   end
 
-  private 
+  private
     def extract_tweet(tweet)
       {}.tap do |tweet_obj|
         tweet_obj[:text] = word_wrap(tweet.text, line_width: $LINE_WIDTH)

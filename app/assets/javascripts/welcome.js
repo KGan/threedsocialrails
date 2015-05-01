@@ -1,49 +1,15 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery', 'bootstrap'], function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery', 'bootstrap'],
+function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   var init, animate, ifn, dispatcher, tour, tweetOptions = {};
   init = _.once(tds.init);
   animate = _.once(tds.animate.bind(tds));
 
-
-  function startTweetStream(channel) {
-    tweetChannel = dispatcher.subscribe(channel);
-    tweetChannel.bind('new', function(tweet) {
-      var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
-      if(tweetUrls) {
-        tweetUrls.forEach(function(tweetUrl) {
-          tweet.text = tweet.text.replace(tweetUrl, '');
-        });
-      }
-      tweet.text = tweet.text.replace('&amp;', '&');
-      tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
-      tweet.text = tweet.text.replace(/\n\s*\z/, '');
-      monkeys.dispatch(tweet, tweetUrls);
-    });
-  }
-
-  function initTweetStream() {
-    if(dispatcher) dispatcher.trigger('connection_closed');
-    dispatcher = new WebSocketRails('localhost:3000/websocket');
-
-    dispatcher.trigger(
-      'new',
-      tweetOptions,
-      function(response) {
-        console.log(response);
-        startTweetStream(response.channel_name);
-      },
-      function(response) {
-        console.log('failed to trigger new');
-        console.log(response);
-      }
-    );
-  }
-
   function submitTags(e) {
     e.preventDefault();
-    tweetOptions.tags = $('#tags').val();
+    tweetOptions.tags = $('#tags').val().replace(/#/g, '');
     if(tweetOptions.tags.length < 1) return;
     $('#tweetsModal').modal('hide');
-    initTweetStream();
+    tds.initTweetStream();
   }
 
   function gatherUserOptions() {
@@ -53,20 +19,25 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
     tour = new Tour({
       steps: [
         {//step 1
-          title: 'Welcome to 3dSocial!',
-          content: "This app streams twitter feeds of your choice to a 3d world.",
-          orphan: true,
+          element: '#tags',
+          backdropPadding: { bottom: '-50px'},
+          title: 'Welcome to The Twittersphere!',
+          content: "This app streams twitter trends of your choice to a 3d world.",
+          placement: 'top',
+          orphan: true
         },
         {//step 2
           element: '#tags',
           title: 'Choose some tags',
-          content: "Type in some comma delimited tags, no hashtags needed.\nWe've filled in the top 10 trending worldwide for you as suggestions",
+          content: "Type the tags you want to follow, separated by commas.",
           placement: 'top'
         },
         {//step 3
-          title: '3dSocial',
-          content: "Tweets will stream in. Click to drag them around \nDouble-click to open linked article in the tweet\nDrag in open space to move the camera",
-          orphan: true,
+          element: '#tags',
+          title: 'In The Sphere',
+          content: "Click and drag to orbit and move tweets. Double-click to open links.",
+          placement: 'top',
+          orphan: true
         }
       ],
     });
@@ -74,14 +45,12 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
     tour.start();
 
   }
+
   return {
     welcome: function() {
+      gatherUserOptions();
       init();
       animate();
-      tweetOptions.tags = 'Bae Bae';
-      initTweetStream();
-      gatherUserOptions();
     }
   };
-
 });
