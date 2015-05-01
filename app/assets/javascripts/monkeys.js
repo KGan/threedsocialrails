@@ -76,7 +76,7 @@ define(['three', 'letters', 'scene', 'camera', 'flyingMonkey'],
   return {
     remove: removeMonkey,
 
-    dispatch: function (tweet, tweetUrls) {
+    dispatch: function (tweet, tweetUrls, starting) {
       var flyingMonkey = createFlyingMonkey(tweet, tweetUrls);
       var entryAngle = Math.random() * 2 * Math.PI;
       var verticalAngle = (0.5 - Math.random()) * Math.PI * (3/4);
@@ -84,16 +84,22 @@ define(['three', 'letters', 'scene', 'camera', 'flyingMonkey'],
         .applyAxisAngle(yaxis, entryAngle);
       var riseAxis = flyingMonkey.position.clone().cross(yaxis).normalize();
       flyingMonkey.position.applyAxisAngle(riseAxis, verticalAngle);
-      flyingMonkey.wander();
-      flyingMonkey.fade(0, 1, function () {
-        flyingMonkey.eachGrandchild(function (letter) {
-          letter.material = letters.material;
+      if (!starting) {
+        flyingMonkey.wander();
+        flyingMonkey.fade(0, 1, function () {
+          flyingMonkey.eachGrandchild(function (letter) {
+            letter.material = letters.material;
+          });
         });
-      });
+      }
       flyingMonkey.lookAt(origin);
       scene.add(flyingMonkey);
       flyingMonkeys.push(flyingMonkey);
       checkMaxMonkeys();
+    },
+
+    monkeys: function () {
+      return flyingMonkeys;
     }
   };
 });

@@ -1,43 +1,14 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery'], function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery'],
+function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   var init, animate, ifn, dispatcher, tour, tweetOptions = {};
   init = _.once(tds.init);
   animate = _.once(tds.animate.bind(tds));
-
-
-  function startTweetStream(channel) {
-    tweetChannel = dispatcher.subscribe(channel);
-    tweetChannel.bind('new', function(tweet) {
-      var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
-      if(tweetUrls) {
-        tweetUrls.forEach(function(tweetUrl) {
-          tweet.text = tweet.text.replace(tweetUrl, '');
-        });
-      }
-      tweet.text = tweet.text.replace('&amp;', '&');
-      tweet.text = tweet.text.replace(/\n\s*\n/g, '\n');
-      tweet.text = tweet.text.replace(/\n\s*\z/, '');
-      monkeys.dispatch(tweet, tweetUrls);
-    });
-  }
-
-  function initTweetStream() {
-    if(dispatcher) dispatcher.trigger('connection_closed');
-    dispatcher = new WebSocketRails('localhost:3000/websocket');
-
-    dispatcher.trigger(
-      'new',
-      tweetOptions,
-      function(response) {
-        startTweetStream(response.channel_name);
-      }
-    );
-  }
 
   function submitTags(e) {
     e.preventDefault();
     tweetOptions.tags = $('#tags').val();
     $('#tweetsModal').modal('hide');
-    initTweetStream();
+    tds.initTweetStream();
   }
 
   function gatherUserOptions() {
@@ -69,11 +40,9 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'rend
   }
   return {
     welcome: function() {
+      gatherUserOptions();
       init();
       animate();
-      tweetOptions.tags = 'Bae Bae';
-      initTweetStream();
-      gatherUserOptions();
     }
   };
 
