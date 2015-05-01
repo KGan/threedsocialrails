@@ -4,9 +4,6 @@
 
 div.threedsocial {
   z-index:1;
-  position: fixed;
-  top: 20px;
-  height: calc(100vh - 20px);
   opacity: 100;
   transition: opacity 1s;
   &.backgrounded {
@@ -15,21 +12,7 @@ div.threedsocial {
   }
 }
 
-body {
-  canvas {
-    position: fixed;
-    z-index: -1;
-    width:100%;
-    height: calc(100vh - 20px);
-    top:20px;
-    opacity: 100;
-    transition: opacity 1s;
-    &.faded {
-      opacity: 0;
-      z-index: -2;
-    }
-  }
-}
+
 
 div.dg {
   &.ac {

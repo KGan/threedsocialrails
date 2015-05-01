@@ -54,7 +54,11 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
 
   function TweetOpts() {
     // this.message = 'Enter some tags separated by commas';
-    this.tags = '';
+    this.tags = window.trending_hashtags;
+    if (!this.tags) {
+      this.tags = 'Bae Bae';
+      console.log('Could not load trending hashtags, loading bae preset');
+    }
     this.Go = ifn;
   }
 
@@ -98,9 +102,8 @@ define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'datG
       init();
       animate();
       tweetOptions = new TweetOpts();
-      tweetOptions.tags = 'Bae Bae';
       initTweetStream();
-      renderer.fadeBackground();
+      // renderer.fadeBackground();
       gatherUserOptions();
     }
   };

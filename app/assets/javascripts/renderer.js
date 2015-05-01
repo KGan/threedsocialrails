@@ -1,6 +1,6 @@
 define(['three', 'jquery'], function (THREE, $) {
   var container = document.createElement( 'div' );
-  $(container).addClass('threedsocial backgrounded');
+  $(container).addClass('threedsocial');
    document.body.appendChild( container );
 
   var SCREEN_WIDTH = window.innerWidth;
@@ -15,15 +15,15 @@ define(['three', 'jquery'], function (THREE, $) {
   renderer.domElement.style.position = "relative";
   container.appendChild( renderer.domElement );
 
-  var canvas = $('<canvas>');
-  var ctx = canvas.get(0).getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
-  $('body').append(canvas);
+  // var canvas = $('<canvas>');
+  // var ctx = canvas.get(0).getContext('2d');
+  // ctx.imageSmoothingEnabled = false;
+  // ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
+  // $('body').append(canvas);
 
-  var img = new Image(), play = true;
-  img.onload = animPixelate;
-  img.src = '';
+  // var img = new Image(), play = true;
+  // img.onload = animPixelate;
+  // img.src = '';
   function animPixelate(){
     var v = 25, dx = 0.25;
     anim();
@@ -55,13 +55,13 @@ define(['three', 'jquery'], function (THREE, $) {
   function bringContainerToFront() {
     $(container).removeClass('backgrounded');
   }
-  
+
 
   return {
     renderer: renderer,
     fadeBackground: function() {
-      fadeCanvas();
-      bringContainerToFront();
+      // fadeCanvas();
+      // bringContainerToFront();
     }
   };
 });

@@ -1,5 +1,5 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore', 'lights'],
-  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster, _) {
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore', 'lights', 'jquery'],
+  function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
     distances, tween, urls, upperCorner,
@@ -10,7 +10,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
     init: function () {
       camera.position.z = 4000;
 
-      document.addEventListener( 'mousedown', onMouseDown, false );
+      $('.threedsocial').on( 'mousedown', onMouseDown);
 
       function setMouse(event) {
         mouse = {};
@@ -21,7 +21,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
 
       function onMouseDown( event ) {
         mouse = setMouse(event);
-        event.preventDefault();
+
         myRaycaster.setFromCamera(mouse, camera);
         intersects = myRaycaster.intersectObjects(scene.children, true);
 
@@ -41,9 +41,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         } else {
           controls.orbitStart(event);
         }
-
-        document.addEventListener('mousemove', onMouseMove, false);
-        document.addEventListener('mouseup', onMouseUp, false);
+        $('.threedsocial').on('mousemove', onMouseMove);
+        $('.threedsocial').on('mouseup', onMouseUp);
       }
 
       function onMouseMove( event ) {
@@ -98,8 +97,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           selectedMonkey = null;
         }
 
-        document.removeEventListener('mousemove', onMouseMove, false);
-        document.removeEventListener('mouseup', onMouseUp, false);
+        $('.threedsocial').off('mousemove');
+        $('.threedsocial').off('mouseup');
 
         controls.resetState();
       }
