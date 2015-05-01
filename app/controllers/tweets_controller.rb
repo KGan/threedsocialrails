@@ -39,7 +39,6 @@ class TweetsController < WebsocketRails::BaseController
         config.access_token        = "2703413065-eoy3gCO8LSKdGizpGRW4nkiPRgv1FK4OWdPQfr4"
         config.access_token_secret = "zNXDFeQZrm3uEkMabpD5KyTYPTqdMn65iGT2eJixU8omP"
     end
-    debugger
     query_terms = query.split(',').map(&:strip)
     results_per_term = 50 / query_terms.length
     @tweets = []
