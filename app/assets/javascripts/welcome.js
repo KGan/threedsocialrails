@@ -1,4 +1,4 @@
-define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery'],
+define(['threedsocial', 'underscore', 'tour', 'webSocketRails', 'monkeys', 'renderer', 'jquery', 'bootstrap'],
 function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   var init, animate, ifn, dispatcher, tour, tweetOptions = {};
   init = _.once(tds.init);
