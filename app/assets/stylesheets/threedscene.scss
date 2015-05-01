@@ -4,30 +4,25 @@
 
 div.threedsocial {
   z-index:1;
-  position: fixed;
-  top: 20px;
-  height: calc(100vh - 20px);
-}
-
-body {
-  canvas.background {
-    z-index: -1;
-    image-rendering: optimizeSpeed;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: -o-crisp-edges;
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;
-    width:100%;
-    height: calc(100vh - 20px);
-    top:20px;
+  opacity: 100;
+  transition: opacity 1s;
+  &.backgrounded {
+    z-index:-2;
+    opacity: 0;
   }
 }
 
+
+
 div.dg {
-  z-index: 2;
+  &.ac {
+    z-index: 2;
+  }
   .dg.a {
     margin-right: 0;
+  }
+  .dg.main {
+
   }
   li:nth-child(1) .property-name {
     text-align:center;

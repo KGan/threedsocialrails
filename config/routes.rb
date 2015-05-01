@@ -51,6 +51,5 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
-  devise_for :users, :skip => [:registration], :controllers => { omniauth_callbacks: 'omniauth_callbacks' }
 
 end
