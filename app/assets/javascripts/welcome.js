@@ -7,13 +7,15 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   function submitTags(e) {
     e.preventDefault();
     tweetOptions.tags = $('#tags').val();
+    if(tweetOptions.tags.length < 1) return;
     $('#tweetsModal').modal('hide');
     tds.initTweetStream();
   }
 
   function gatherUserOptions() {
     $('#tweetsModal').modal('show');
-    $('#tweetsModal form').on('submit', ifn);
+    $('#tweetsModal').on('bs.modal.shown', function(){});
+    $('#tweetsModal form').on('submit', submitTags);
     tour = new Tour({
       steps: [
         {//step 1
@@ -22,10 +24,10 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
           orphan: true,
         },
         {//step 2
-          element: '#tweetsModal',
+          element: '#tags',
           title: 'Choose some tags',
           content: "Type in some comma delimited tags, no hashtags needed.\nWe've filled in the top 10 trending worldwide for you as suggestions",
-          placement: 'bottom'
+          placement: 'top'
         },
         {//step 3
           title: '3dSocial',
@@ -38,6 +40,7 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
     tour.start();
 
   }
+  
   return {
     welcome: function() {
       gatherUserOptions();
@@ -45,5 +48,4 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
       animate();
     }
   };
-
 });
