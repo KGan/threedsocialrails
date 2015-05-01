@@ -6,7 +6,7 @@ class ThreedsceneController < ApplicationController
         config.access_token        = "2703413065-eoy3gCO8LSKdGizpGRW4nkiPRgv1FK4OWdPQfr4"
         config.access_token_secret = "zNXDFeQZrm3uEkMabpD5KyTYPTqdMn65iGT2eJixU8omP"
     end
-
     @trends = client.trends(1).map{ |trend| trend.name.gsub('#', '') }.join(', ')
+    # @trends = "test trends and country music"
   end
 end
