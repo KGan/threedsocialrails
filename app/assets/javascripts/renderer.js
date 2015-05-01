@@ -6,8 +6,8 @@ define(['three', 'jquery'], function (THREE, $) {
   var SCREEN_WIDTH = window.innerWidth;
   var SCREEN_HEIGHT = window.innerHeight;
 
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
-  renderer.setClearColor( new THREE.Color(0x9daaaa) );
+  renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+  // renderer.setClearColor( new THREE.Color(0x9daaaa, 0));
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
   renderer.autoClear = false;
