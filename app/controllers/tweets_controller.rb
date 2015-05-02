@@ -6,9 +6,11 @@ class TweetsController < WebsocketRails::BaseController
     begin
       fetch_fifty(message["tags"])
     rescue Twitter::Error => e
-      debugger
+      failed_error = {
+        "message" => e.message
+      }
     end
-    Thread.abort_on_exception = true
+    # Thread.abort_on_exception = true
     controller_store[:uids] ||= []
     channel_id = 0
     while controller_store[:uids].include?(channel_id)
@@ -29,12 +31,10 @@ class TweetsController < WebsocketRails::BaseController
           WebsocketRails["tweets_#{cid}"].trigger 'new', Thread.current[:tweet]
         end
       rescue Twitter::Error => e
-        debugger
-        WebsocketRails["tweets_#{cid}"].trigger 'twitter_error', {message: e.message}
+        WebsocketRails["tweets_#{cid}"].trigger 'streaming_error', {message: e.message}
       end
     end
-    debugger
-    trigger_success({:channel_name => "tweets_#{channel_id}", :tweets => @tweets})
+    trigger_success({:channel_name => "tweets_#{channel_id}", :tweets => @tweets, :failed => failed_error})
   end
 
   def disconnect
@@ -53,7 +53,7 @@ class TweetsController < WebsocketRails::BaseController
     results_per_term = 50 / query_terms.length
     @tweets = []
     query_terms.each do |qt|
-      @tweets.concat(client.search("##{qt}",:count => results_per_term, :result_type => 'recent').map do |tweet|
+      @tweets.concat(client.search("##{qt} -rt",:count => results_per_term, :result_type => 'recent').take(results_per_term).map do |tweet|
         extract_tweet(tweet)
       end )
     end

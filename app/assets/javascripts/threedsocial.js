@@ -5,6 +5,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
     distances, tween, urls, upperCorner,
     mouseDownTime = 0,
     highlightColor = new THREE.Color(0xf0c96e);
+  
+  var prepopulate, twSphereZoom;
 
   return {
     init: function () {
@@ -80,6 +82,13 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       function startTweetStream(channel) {
         tweetChannel = dispatcher.subscribe(channel);
         tweetChannel.bind('new', dispatchMonkey);
+        tweetChannel.bind('streaming_error', showError);
+      }
+
+      function showError(response) {
+        var $el = $('<div class="error">');
+        $el.html('Service busy. Too many connections. Please try again later.');
+        $('body').append($el);
       }
 
       function dispatchMonkey(tweet, starting) {
@@ -120,7 +129,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         controls.resetState();
       }
 
-      function zoomIn (channel) {
+      twSphereZoom = function zoomIn (channel) {
         controls.setRadius = 100000;
         new TWEEN.Tween(controls)
           .to({ setRadius: 500, setTheta: 15 }, 8000)
@@ -132,7 +141,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
             monkeys.monkeys().forEach(function(flyingMonkey) {
               flyingMonkey.wander();
             });
-            startTweetStream();
+            startTweetStream(channel);
           })
           .start();
         controls.setPhi = 1;
@@ -142,13 +151,13 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           .easing(TWEEN.Easing.Sinusoidal.InOut)
           .yoyo(true)
           .start();
-      }
+      };
 
-      function populate (tweets) {
+      prepopulate = function populate (tweets) {
         tweets.forEach(function (tweet) {
           dispatchMonkey(tweet, true);
         });
-      }
+      };
     },   // this is the end of init()
 
     animate: function () {
@@ -165,8 +174,12 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         'new',
         tweetOptions,
         function(response) {
-          populate(response.tweets);
-          zoomIn(response.channel_name);
+          if(response.failed) {
+            console.log('Twitter error:' + response.failed.message);
+          } else {
+            prepopulate(response.tweets);
+          }
+          twSphereZoom(response.channel_name);
         },
         function(response) {
           console.log(response);
