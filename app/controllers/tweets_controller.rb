@@ -65,6 +65,7 @@ class TweetsController < WebsocketRails::BaseController
       {}.tap do |tweet_obj|
         tweet_obj[:text] = word_wrap(tweet.text, line_width: $LINE_WIDTH)
         tweet_obj[:author] = '@' + tweet.attrs[:user][:screen_name]
+        puts tweet_obj
       end
     end
 end

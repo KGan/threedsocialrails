@@ -5,8 +5,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
     distances, tween, urls, upperCorner,
     mouseDownTime = 0,
     highlightColor = new THREE.Color(0xf0c96e);
-  
-  var prepopulate, twSphereZoom;
+
+  var prepopulate, twSphereZoom, showError;
 
   return {
     init: function () {
@@ -80,16 +80,23 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
       }
 
       function startTweetStream(channel) {
-        tweetChannel = dispatcher.subscribe(channel);
-        tweetChannel.bind('new', dispatchMonkey);
-        tweetChannel.bind('streaming_error', showError);
+
+
+
       }
 
-      function showError(response) {
+      showError = function showError(response) {
+        console.log('hello');
         var $el = $('<div class="error">');
-        $el.html('Service busy. Too many connections. Please try again later.');
+        $el.html('Streaming service temporarily unavailable. Please try again soon..');
         $('body').append($el);
-      }
+        setTimeout(function () {
+          $el.fadeIn();
+          setTimeout(function () {
+            $el.fadeOut();
+          }, 4000);
+        }, 7000);
+      };
 
       function dispatchMonkey(tweet, starting) {
         var tweetUrls = /https?:\/\/t\.co\/\w{0,11}/g.exec(tweet.text);
@@ -129,7 +136,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         controls.resetState();
       }
 
-      twSphereZoom = function zoomIn (channel) {
+      twSphereZoom = function zoomIn (tweetChannel) {
         controls.setRadius = 100000;
         new TWEEN.Tween(controls)
           .to({ setRadius: 500, setTheta: 15 }, 8000)
@@ -138,10 +145,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           })
           .easing(TWEEN.Easing.Quadratic.Out)
           .onComplete(function () {
-            monkeys.monkeys().forEach(function(flyingMonkey) {
-              flyingMonkey.wander();
-            });
-            startTweetStream(channel);
+            tweetChannel.bind('new', dispatchMonkey);
           })
           .start();
         controls.setPhi = 1;
@@ -179,7 +183,9 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           } else {
             prepopulate(response.tweets);
           }
-          twSphereZoom(response.channel_name);
+          tweetChannel = dispatcher.subscribe(response.channel_name);
+          tweetChannel.bind('streaming_error', showError);
+          twSphereZoom(tweetChannel);
         },
         function(response) {
           console.log(response);

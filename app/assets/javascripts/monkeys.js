@@ -85,13 +85,13 @@ define(['three', 'letters', 'scene', 'camera', 'flyingMonkey'],
       var riseAxis = flyingMonkey.position.clone().cross(yaxis).normalize();
       flyingMonkey.position.applyAxisAngle(riseAxis, verticalAngle);
       if (!starting) {
-        flyingMonkey.wander();
         flyingMonkey.fade(0, 1, function () {
           flyingMonkey.eachGrandchild(function (letter) {
             letter.material = letters.material;
           });
         });
       }
+      flyingMonkey.wander();
       flyingMonkey.lookAt(origin);
       scene.add(flyingMonkey);
       flyingMonkeys.push(flyingMonkey);

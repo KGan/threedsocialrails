@@ -5,6 +5,7 @@
 $placeholder-color: #bbb;
 $light-text: #ddd;
 $user-text: #616775;
+$error-color: #C8373C;
 
 // $user-text: #6bbde4;
 
@@ -23,11 +24,15 @@ div.modal-backdrop.in {
 }
 
 .error {
-  font-size: 2vh;
+  font-size: 3.5vh;
   width: 100%;
-  padding-left: 10vw;
   text-align: center;
-  color: #ccaaab
+  color: $error-color;
+  letter-spacing: 0.2em;
+  top: 30vh;
+  position: fixed;
+  z-index: 10;
+  display: none;
 }
 
 .popover.top.fade.tour-tour {
