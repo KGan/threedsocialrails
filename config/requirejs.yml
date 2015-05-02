@@ -5,7 +5,8 @@ paths:
   'three': 'three'
   'threedsocial': 'threedsocial'
   'domReady': 'domReady'
-  'webSocketRails': 'webSocketRails'
+  'webSocketRails': 'websocket_rails/main'
+  'tour': 'bootstrap-tour'
 
 shim:
   'threeCore':
