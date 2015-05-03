@@ -1,6 +1,7 @@
 class TweetsController < WebsocketRails::BaseController
   include ActionView::Helpers::TextHelper
   $LINE_WIDTH = 30
+  $TOTAL_MONKEYS = 100
   def start_new
     # trigger_failure
     begin
@@ -50,7 +51,7 @@ class TweetsController < WebsocketRails::BaseController
         config.access_token_secret = Figaro.env.twitter_access_secret
     end
     query_terms = query.split(',').map(&:strip)
-    results_per_term = 50 / query_terms.length
+    results_per_term = $TOTAL_MONKEYS / query_terms.length
     @tweets = []
     query_terms.each do |qt|
       @tweets.concat(client.search("##{qt} -rt",:count => results_per_term, :result_type => 'recent').take(results_per_term).map do |tweet|

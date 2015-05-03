@@ -6,7 +6,7 @@ define(['three', 'letters', 'scene', 'camera', 'flyingMonkey'],
     letterSpace = 10,
     spaceSpace = 40,
     mouseX = 0, mouseY = 0,
-    maxMonkeys = 75,
+    maxMonkeys = 100,
     basicMonkeyColor = new THREE.Color(0xaad5ff),
     yaxis = new THREE.Vector3(0, 1, 0);
 
