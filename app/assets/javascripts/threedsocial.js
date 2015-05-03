@@ -173,7 +173,8 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
 
     initTweetStream: function (tweetOptions) {
       if (dispatcher) dispatcher.trigger('connection_closed');
-      dispatcher = new WebSocketRails('localhost:3000/websocket');
+      var host = ENV === "development" ? 'localhost:3000' : 'twittersphere.herokuapp.com';
+      dispatcher = new WebSocketRails(host + '/websocket');
       dispatcher.trigger(
         'new',
         tweetOptions,
