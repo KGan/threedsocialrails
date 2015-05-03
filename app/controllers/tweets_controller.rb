@@ -2,6 +2,13 @@ class TweetsController < WebsocketRails::BaseController
   include ActionView::Helpers::TextHelper
   $LINE_WIDTH = 30
   $TOTAL_MONKEYS = 100
+  $REPLACEMENTS = {
+    '&amp;' => '&',
+    '&lt;' => '<',
+    '&gt;' => '>',
+    '&quot;' => '"'
+  }
+
   def start_new
     # trigger_failure
     begin
@@ -65,8 +72,9 @@ class TweetsController < WebsocketRails::BaseController
     def extract_tweet(tweet)
       {}.tap do |tweet_obj|
         tweet_obj[:text] = word_wrap(tweet.text, line_width: $LINE_WIDTH)
+        $REPLACEMENTS.each { |replaced, replacing| tweet_obj[:text].gsub!(replaced, replacing) }
         tweet_obj[:author] = '@' + tweet.attrs[:user][:screen_name]
-        puts tweet_obj
+        # puts tweet_obj
       end
     end
 end
