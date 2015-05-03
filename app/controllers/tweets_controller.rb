@@ -1,3 +1,20 @@
+class Client
+  attr_accessor :uuid, :tags
+
+  def initialize(uuid, tags)
+    @uuid = uuid
+    @tags = tags
+  end
+
+  def regex
+    return @regex if @regex
+    @regex = Regexp.new(tags.split(',').map do |tag|
+      "(" + tag.strip + ")"
+    end.join('|'), "i")
+  end
+end
+
+
 class TweetsController < WebsocketRails::BaseController
   include ActionView::Helpers::TextHelper
   $LINE_WIDTH = 30
@@ -18,36 +35,57 @@ class TweetsController < WebsocketRails::BaseController
         "message" => e.message
       }
     end
-    # Thread.abort_on_exception = true
-    controller_store[:uids] ||= []
+    Thread.abort_on_exception = true
+    controller_store[:clients] ||= []
     channel_id = 0
-    while controller_store[:uids].include?(channel_id)
+    while controller_store[:clients].map { |client| client.uuid }.include?(channel_id)
       channel_id += 1
     end
-    controller_store[:uids] << channel_id
-    connection_store[:thread] = Thread.new(channel_id, message["tags"]) do |cid, tags|
-      begin
-        Thread.current[:client] = Twitter::Streaming::Client.new do |config|
+    connection_store[:uuid] = channel_id
+    controller_store[:clients] << Client.new(channel_id, message["tags"])
+    restart_thread
+    trigger_success({:channel_name => "tweets_#{channel_id}", :tweets => @tweets, :failed => failed_error})
+  end
+
+  def restart_thread
+    controller_store[:thread].exit if controller_store[:thread]
+    return if controller_store[:clients].empty?
+    # begin
+      controller_store[:thread] = Thread.new do
+        controller_store[:twitter_streaming] = Twitter::Streaming::Client.new do |config|
           config.consumer_key        = Figaro.env.twitter_consumer_key
           config.consumer_secret     = Figaro.env.twitter_consumer_secret
           config.access_token        = Figaro.env.twitter_access_token
           config.access_token_secret = Figaro.env.twitter_access_secret
         end
 
-        Thread.current[:client].filter(track: tags) do |object|
-          Thread.current[:tweet] = extract_tweet(object)
-          WebsocketRails["tweets_#{cid}"].trigger 'new', Thread.current[:tweet]
+        controller_store[:twitter_streaming].filter(track: all_tags) do |object|
+          tweet = extract_tweet(object)
+          controller_store[:clients].each do |client|
+            if client.regex.match(tweet[:text])
+              WebsocketRails["tweets_#{client.uuid}"].trigger 'new', tweet
+            end
+          end
         end
-      rescue Twitter::Error => e
-        WebsocketRails["tweets_#{cid}"].trigger 'streaming_error', {message: e.message}
       end
-    end
-    trigger_success({:channel_name => "tweets_#{channel_id}", :tweets => @tweets, :failed => failed_error})
+    # rescue Twitter::Error => e
+    #   controller_store[:clients].each do |client|
+    #     WebsocketRails["tweets_#{client.uuid}"].trigger 'streaming_error', {message: e.message}
+    #   end
+    # end
   end
 
   def disconnect
-    connection_store[:thread].exit
-    controller_store[:uids] -= [channel_id]
+    controller_store[:clients].reject do |client|
+      client.uuid == connection_store[:uuid]
+    end
+    restart_thread
+  end
+
+  def all_tags
+    controller_store[:clients].inject([]) do |atags, client|
+      atags + client.tags.split(",").map(&:strip)
+    end.uniq.join(", ")
   end
 
   def fetch_fifty(query)
