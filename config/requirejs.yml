@@ -7,7 +7,7 @@ paths:
   'domReady': 'domReady'
   'webSocketRails': 'websocket_rails/main'
   'tour': 'bootstrap-tour'
-  'bootstrap': 'bootsrap-sprockets'
+  'bootstrap': 'bootstrap-sprockets'
   'underscore': 'underscore-min'
   'welcome': 'welcome'
   'datGUI': 'dat.gui.min'
