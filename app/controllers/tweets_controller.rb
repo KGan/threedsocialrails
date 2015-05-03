@@ -47,10 +47,17 @@ class TweetsController < WebsocketRails::BaseController
     trigger_success({:channel_name => "tweets_#{channel_id}", :tweets => @tweets, :failed => failed_error})
   end
 
+  def disconnect
+    controller_store[:clients].reject do |client|
+      client.uuid == connection_store[:uuid]
+    end
+    restart_thread
+  end
+
   def restart_thread
     controller_store[:thread].exit if controller_store[:thread]
     return if controller_store[:clients].empty?
-    # begin
+    begin
       controller_store[:thread] = Thread.new do
         controller_store[:twitter_streaming] = Twitter::Streaming::Client.new do |config|
           config.consumer_key        = Figaro.env.twitter_consumer_key
@@ -68,18 +75,11 @@ class TweetsController < WebsocketRails::BaseController
           end
         end
       end
-    # rescue Twitter::Error => e
-    #   controller_store[:clients].each do |client|
-    #     WebsocketRails["tweets_#{client.uuid}"].trigger 'streaming_error', {message: e.message}
-    #   end
-    # end
-  end
-
-  def disconnect
-    controller_store[:clients].reject do |client|
-      client.uuid == connection_store[:uuid]
+    rescue Twitter::Error => e
+      controller_store[:clients].each do |client|
+        WebsocketRails["tweets_#{client.uuid}"].trigger 'streaming_error', {message: e.message}
+      end
     end
-    restart_thread
   end
 
   def all_tags

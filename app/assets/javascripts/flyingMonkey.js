@@ -49,11 +49,11 @@ define(['three', 'letters', 'tween', 'raycaster', 'underscore'],
       this.eachGrandchild(function (letter) {
         letter.material = fadeMaterial;
       });
+      setTimeout(function() {
+        callback();
+      }, fadeTime);
       new TWEEN.Tween(fadeMaterial)
         .to({ opacity: toOpacity }, fadeTime)
-        .onComplete(function () {
-          callback();
-        })
         .start();
     },
 
