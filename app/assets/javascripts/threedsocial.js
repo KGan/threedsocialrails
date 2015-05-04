@@ -151,8 +151,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
             });
             tweetChannel.bind('new', dispatchMonkey);
             tour.init();
-            tour.end();
-            tour.restart();
+            tour.start();
           })
           .start();
         controls.setPhi = 1;
