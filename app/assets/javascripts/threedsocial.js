@@ -1,8 +1,8 @@
-define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore', 'lights', 'jquery'],
+define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', 'scene', 'monkeys', 'raycaster', 'underscore', 'lights', 'jquery', 'tour'],
   function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
-    distances, tween, urls, upperCorner,
+    distances, tween, urls, upperCorner, tour, 
     mouseDownTime = 0,
     highlightColor = new THREE.Color(0xf0c96e);
 
@@ -78,13 +78,6 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           tween.stop();
         }
       }
-
-      function startTweetStream(channel) {
-
-
-
-      }
-
       showError = function showError(response) {
         console.log('hello');
         var $el = $('<div class="error">');
@@ -145,7 +138,21 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           })
           .easing(TWEEN.Easing.Quadratic.Out)
           .onComplete(function () {
+            tour = new Tour({
+              steps: [
+                {
+                  title: 'In The Sphere',
+                  content: "<div>Click and drag to orbit and move tweets</div><div>Double-click to open links</div><div>Middle-click to zoom</div><div>Right click to dismiss</div>",
+                  placement: 'top',
+                  backdrop:true,
+                  orphan: true
+                }
+              ]
+            });
             tweetChannel.bind('new', dispatchMonkey);
+            tour.init();
+            tour.end();
+            tour.restart();
           })
           .start();
         controls.setPhi = 1;
