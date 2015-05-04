@@ -2,7 +2,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
   function (THREE, TWEEN, WebSocketRails, renderer, camera, controls, scene, monkeys, myRaycaster) {
 
   var dispatcher, tweetUrls, selectedMonkey, mouse, intersects, pointedMonkeys,
-    distances, tween, urls, upperCorner, tour, 
+    distances, tween, urls, upperCorner, tour,
     mouseDownTime = 0,
     highlightColor = new THREE.Color(0xf0c96e);
 
@@ -144,7 +144,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
                   title: 'In The Sphere',
                   content: "<div>Click and drag to orbit and move tweets</div><div>Double-click to open links</div><div>Middle-click to zoom</div><div>Right click to dismiss</div>",
                   placement: 'top',
-                  backdrop:true,
+                  backdrop: false,
                   orphan: true
                 }
               ]
