@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'threedscene#index'
-  get 'keep-alive' => 'alive_controller#live'
+  get 'keep-alive' => 'alive#live'
   #   get 'products/:id' => 'catalog#view'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
