@@ -32,13 +32,7 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
           content: "Type the tags you want to follow, separated by commas.",
           placement: 'top'
         },
-        {//step 3
-          element: '#tags',
-          title: 'In The Sphere',
-          content: "Click and drag to orbit and move tweets. Double-click to open links.",
-          placement: 'top',
-          orphan: true
-        }
+        
       ],
     });
     tour.init();
