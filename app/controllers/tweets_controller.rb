@@ -1,20 +1,3 @@
-class Client
-  attr_accessor :uuid, :tags
-
-  def initialize(uuid, tags)
-    @uuid = uuid
-    @tags = tags
-  end
-
-  def regex
-    return @regex if @regex
-    @regex = Regexp.new(tags.split(',').map do |tag|
-      "(" + tag.strip + ")"
-    end.join('|'), "i")
-  end
-end
-
-
 class TweetsController < WebsocketRails::BaseController
   include ActionView::Helpers::TextHelper
   $LINE_WIDTH = 30
@@ -115,4 +98,21 @@ class TweetsController < WebsocketRails::BaseController
         # puts tweet_obj
       end
     end
+end
+
+
+class Client
+  attr_accessor :uuid, :tags
+
+  def initialize(uuid, tags)
+    @uuid = uuid
+    @tags = tags
+  end
+
+  def regex
+    return @regex if @regex
+    @regex = Regexp.new(tags.split(',').map do |tag|
+      "(" + tag.strip + ")"
+    end.join('|'), "i")
+  end
 end
