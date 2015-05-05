@@ -6,7 +6,10 @@ class ThreedsceneController < ApplicationController
         config.access_token        = Figaro.env.twitter_access_token
         config.access_token_secret = Figaro.env.twitter_access_secret
     end
-    @trends = client.trends(23424977).map{ |trend| trend.name.gsub('#', '') }.join(', ')
-    # @trends = "test trends and country music"
+    begin
+      @trends = client.trends(23424977).map{ |trend| trend.name.gsub('#', '') }.join(', ')
+    rescue Twitter::Error
+      @trends = "trends not available"
+    end
   end
 end

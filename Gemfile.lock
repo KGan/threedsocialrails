@@ -151,6 +151,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.1.0)
+      byebug (~> 4.0)
+      pry (~> 0.10)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
     rack (1.6.0)
@@ -260,7 +263,6 @@ PLATFORMS
 DEPENDENCIES
   better_errors
   bootstrap-sass
-  byebug
   coffee-rails
   figaro
   guard (>= 2.2.2)
@@ -269,6 +271,7 @@ DEPENDENCIES
   jquery-rails
   newrelic_rpm
   openssl
+  pry-byebug
   pry-rails
   rack-livereload
   rails (= 4.2.0)

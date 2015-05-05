@@ -18,7 +18,7 @@ class TweetsController < WebsocketRails::BaseController
         "message" => e.message
       }
     end
-    Thread.abort_on_exception = true
+    # Thread.abort_on_exception = true
     controller_store[:clients] ||= []
     channel_id = 0
     while controller_store[:clients].map { |client| client.uuid }.include?(channel_id)
@@ -31,7 +31,7 @@ class TweetsController < WebsocketRails::BaseController
   end
 
   def disconnect
-    controller_store[:clients].reject do |client|
+    controller_store[:clients].reject! do |client|
       client.uuid == connection_store[:uuid]
     end
     restart_thread
@@ -40,27 +40,27 @@ class TweetsController < WebsocketRails::BaseController
   def restart_thread
     controller_store[:thread].exit if controller_store[:thread]
     return if controller_store[:clients].empty?
-    begin
-      controller_store[:thread] = Thread.new do
-        controller_store[:twitter_streaming] = Twitter::Streaming::Client.new do |config|
-          config.consumer_key        = Figaro.env.twitter_consumer_key
-          config.consumer_secret     = Figaro.env.twitter_consumer_secret
-          config.access_token        = Figaro.env.twitter_access_token
-          config.access_token_secret = Figaro.env.twitter_access_secret
-        end
+    controller_store[:thread] = Thread.new do
+      begin
+      controller_store[:twitter_streaming] = Twitter::Streaming::Client.new do |config|
+        config.consumer_key        = Figaro.env.twitter_consumer_key
+        config.consumer_secret     = Figaro.env.twitter_consumer_secret
+        config.access_token        = Figaro.env.twitter_access_token
+        config.access_token_secret = Figaro.env.twitter_access_secret
+      end
 
-        controller_store[:twitter_streaming].filter(track: all_tags) do |object|
-          tweet = extract_tweet(object)
-          controller_store[:clients].each do |client|
-            if client.regex.match(tweet[:text])
-              WebsocketRails["tweets_#{client.uuid}"].trigger 'new', tweet
-            end
+      controller_store[:twitter_streaming].filter(track: all_tags) do |object|
+        tweet = extract_tweet(object)
+        controller_store[:clients].each do |client|
+          if client.regex.match(tweet[:text])
+            WebsocketRails["tweets_#{client.uuid}"].trigger 'new', tweet
           end
         end
       end
-    rescue Twitter::Error => e
-      controller_store[:clients].each do |client|
-        WebsocketRails["tweets_#{client.uuid}"].trigger 'streaming_error', {message: e.message}
+      rescue Twitter::Error => e
+        controller_store[:clients].each do |client|
+          WebsocketRails["tweets_#{client.uuid}"].trigger 'streaming_error', {message: e.message}
+        end
       end
     end
   end
