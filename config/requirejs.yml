@@ -10,7 +10,6 @@ paths:
   'bootstrap': 'bootstrap-sprockets'
   'underscore': 'underscore-min'
   'welcome': 'welcome'
-  'datGUI': 'dat.gui.min'
 
 shim:
   'threeCore':
@@ -25,8 +24,6 @@ shim:
   'tour':
     deps: ['jquery']
     exports: 'Tour'
-  'datGui':
-    exports: 'dat.GUI'
   'jquery':
     exports: '$'
   'underscore':

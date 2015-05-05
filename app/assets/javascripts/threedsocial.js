@@ -129,8 +129,13 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
         controls.resetState();
       }
 
+      function addInstructions () {
+        $('.instructions').fadeIn(6000);
+      }
+
       twSphereZoom = function zoomIn (tweetChannel) {
         controls.setRadius = 100000;
+        addInstructions();
         new TWEEN.Tween(controls)
           .to({ setRadius: 500, setTheta: 15 }, 8000)
           .onUpdate(function() {
@@ -138,20 +143,7 @@ define( ['three', 'tween', 'webSocketRails', 'renderer', 'camera', 'controls', '
           })
           .easing(TWEEN.Easing.Quadratic.Out)
           .onComplete(function () {
-            tour = new Tour({
-              steps: [
-                {
-                  title: 'In The Sphere',
-                  content: "<div>Click and drag to orbit and move tweets</div><div>Double-click to open links</div><div>Middle-click to zoom</div><div>Right click to dismiss</div>",
-                  placement: 'top',
-                  backdrop: false,
-                  orphan: true
-                }
-              ]
-            });
             tweetChannel.bind('new', dispatchMonkey);
-            tour.init();
-            tour.start();
           })
           .start();
         controls.setPhi = 1;

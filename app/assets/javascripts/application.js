@@ -8,7 +8,6 @@ require.config({
     'tween': { exports: 'TWEEN' },
     'webSocketRails': { exports: 'WebSocketRails'},
     'tour': { deps:['jquery'], exports: 'Tour'},
-    'datGui': { exports: 'dat.GUI' },
     'jquery': { exports: '$' },
     'underscore': { exports: '_' },
     'bootstrap': { deps:['jquery'] }
@@ -25,8 +24,7 @@ require.config({
     'tour': 'bootstrap-tour',
     'bootstrap': 'bootstrap-sprockets',
     'underscore': 'underscore-min',
-    'welcome': 'welcome',
-    'datGui': 'dat.gui.min'
+    'welcome': 'welcome'
   }
 });
 
