@@ -13,8 +13,10 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
   }
 
   function gatherUserOptions() {
+    setTimeout(function () {
+      $('input').focus();
+    }, 300);
     $('#tweetsModal').modal('show');
-    $('#tweetsModal').on('bs.modal.shown', function(){});
     $('#tweetsModal form').on('submit', submitTags);
     tour = new Tour({
       steps: [
@@ -32,7 +34,7 @@ function(tds, _, Tour, WebSocketRails, monkeys, renderer, $){
           content: "Type the tags you want to follow, separated by commas.",
           placement: 'top'
         },
-        
+
       ],
     });
     tour.init();
